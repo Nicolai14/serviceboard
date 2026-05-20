@@ -17,7 +17,7 @@
                 </span>
             </div>
             <p class="mt-0.5 text-sm text-zinc-500 font-mono">
-                {{ $server->ssh_user }}@{{ $server->hostname }}:{{ $server->ssh_port }}
+                {{ $server->ssh_user . '@' . ($server->ip_address ?: $server->hostname) . ':' . $server->ssh_port }}
             </p>
         </div>
 
