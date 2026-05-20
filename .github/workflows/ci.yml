@@ -103,4 +103,5 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan route:cache
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan view:clear
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T --user root app php artisan storage:link
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml restart nginx
             echo "Deploy successful"
