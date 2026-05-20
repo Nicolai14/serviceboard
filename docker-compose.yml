@@ -43,6 +43,23 @@ services:
     networks:
       - serverflow
 
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: serverflow_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work --queue=monitoring,default --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/local.ini
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - serverflow
+
   redis:
     image: redis:7-alpine
     container_name: serverflow_redis
