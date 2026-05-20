@@ -14,7 +14,12 @@ class AlertController extends Controller
 
     public function index(Request $request): View
     {
-        $alerts = $this->alertService->getForUser($request->user(), $request->only(['severity', 'unread', 'server_id']));
+        $workspace = app('activeWorkspace');
+        $alerts    = $this->alertService->getForUser(
+            $request->user(),
+            $request->only(['severity', 'unread', 'server_id']),
+            $workspace,
+        );
 
         return view('alerts.index', compact('alerts'));
     }
@@ -30,7 +35,8 @@ class AlertController extends Controller
 
     public function markAllAsRead(Request $request): RedirectResponse
     {
-        $this->alertService->markAllAsRead($request->user());
+        $workspace = app('activeWorkspace');
+        $this->alertService->markAllAsRead($request->user(), $workspace);
 
         return back()->with('success', 'Alle Alerts wurden als gelesen markiert.');
     }

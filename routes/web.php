@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DockerController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -27,8 +28,11 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'workspace'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+    // Workspace
+    Route::post('/workspace/{workspace}/switch', [WorkspaceController::class, 'switch'])->name('workspace.switch');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

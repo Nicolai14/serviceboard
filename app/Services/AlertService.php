@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Alert;
 use App\Models\Server;
 use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class AlertService
@@ -21,9 +22,14 @@ class AlertService
         ]);
     }
 
-    public function getForUser(User $user, array $filters = []): LengthAwarePaginator
+    public function getForUser(User $user, array $filters = [], ?Workspace $workspace = null): LengthAwarePaginator
     {
         $query = Alert::where('user_id', $user->id)->with('server');
+
+        if ($workspace) {
+            $serverIds = $workspace->servers()->pluck('id');
+            $query->whereIn('server_id', $serverIds);
+        }
 
         if (!empty($filters['severity'])) {
             $query->bySeverity($filters['severity']);
@@ -40,9 +46,16 @@ class AlertService
         return $query->latest()->paginate(20);
     }
 
-    public function markAllAsRead(User $user): int
+    public function markAllAsRead(User $user, ?Workspace $workspace = null): int
     {
-        return Alert::where('user_id', $user->id)->unread()->update(['is_read' => true]);
+        $query = Alert::where('user_id', $user->id)->unread();
+
+        if ($workspace) {
+            $serverIds = $workspace->servers()->pluck('id');
+            $query->whereIn('server_id', $serverIds);
+        }
+
+        return $query->update(['is_read' => true]);
     }
 
     public function markAsRead(Alert $alert): void
@@ -55,17 +68,27 @@ class AlertService
         $alert->resolve();
     }
 
-    public function getUnreadCount(User $user): int
+    public function getUnreadCount(User $user, ?Workspace $workspace = null): int
     {
-        return Alert::where('user_id', $user->id)->unread()->count();
+        $query = Alert::where('user_id', $user->id)->unread();
+
+        if ($workspace) {
+            $serverIds = $workspace->servers()->pluck('id');
+            $query->whereIn('server_id', $serverIds);
+        }
+
+        return $query->count();
     }
 
-    public function getRecentForUser(User $user, int $limit = 5): \Illuminate\Database\Eloquent\Collection
+    public function getRecentForUser(User $user, int $limit = 5, ?Workspace $workspace = null): \Illuminate\Database\Eloquent\Collection
     {
-        return Alert::where('user_id', $user->id)
-            ->with('server')
-            ->latest()
-            ->limit($limit)
-            ->get();
+        $query = Alert::where('user_id', $user->id)->with('server')->latest()->limit($limit);
+
+        if ($workspace) {
+            $serverIds = $workspace->servers()->pluck('id');
+            $query->whereIn('server_id', $serverIds);
+        }
+
+        return $query->get();
     }
 }

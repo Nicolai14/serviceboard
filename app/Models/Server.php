@@ -14,6 +14,7 @@ class Server extends Model
 
     protected $fillable = [
         'user_id',
+        'workspace_id',
         'name',
         'hostname',
         'ip_address',
@@ -51,6 +52,11 @@ class Server extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
     }
 
     public function deployments(): HasMany

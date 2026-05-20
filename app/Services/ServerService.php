@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\SSHException;
 use App\Models\Server;
 use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ServerService
@@ -14,9 +15,11 @@ class ServerService
         private readonly MetricService $metricService,
     ) {}
 
-    public function getAllForUser(User $user, array $filters = []): LengthAwarePaginator
+    public function getAllForUser(User $user, array $filters = [], ?Workspace $workspace = null): LengthAwarePaginator
     {
-        $query = $user->servers()->with(['services', 'alerts' => fn ($q) => $q->unread()]);
+        $query = $workspace
+            ? $workspace->servers()->with(['services', 'alerts' => fn ($q) => $q->unread()])
+            : $user->servers()->with(['services', 'alerts' => fn ($q) => $q->unread()]);
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -33,8 +36,12 @@ class ServerService
         return $query->latest()->paginate(15);
     }
 
-    public function create(User $user, array $data): Server
+    public function create(User $user, array $data, ?Workspace $workspace = null): Server
     {
+        if ($workspace) {
+            $data['workspace_id'] = $workspace->id;
+        }
+
         return $user->servers()->create($data);
     }
 
@@ -106,15 +113,17 @@ class ServerService
 
     // -------------------------------------------------------------------------
 
-    public function getStatusSummary(User $user): array
+    public function getStatusSummary(User $user, ?Workspace $workspace = null): array
     {
-        $servers = $user->servers();
+        $base = fn () => $workspace
+            ? Server::where('workspace_id', $workspace->id)
+            : $user->servers();
 
         return [
-            'total'       => (clone $servers)->count(),
-            'online'      => (clone $servers)->online()->count(),
-            'offline'     => (clone $servers)->offline()->count(),
-            'maintenance' => (clone $servers)->where('status', 'maintenance')->count(),
+            'total'       => $base()->count(),
+            'online'      => $base()->online()->count(),
+            'offline'     => $base()->offline()->count(),
+            'maintenance' => $base()->where('status', 'maintenance')->count(),
         ];
     }
 }

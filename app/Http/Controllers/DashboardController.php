@@ -11,7 +11,8 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $summary = $this->dashboardService->getSummary($request->user());
+        $workspace = app('activeWorkspace');
+        $summary   = $this->dashboardService->getSummary($request->user(), $workspace);
 
         return view('dashboard.index', $summary);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\WorkspaceType;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -59,5 +60,29 @@ class User extends Authenticatable
     public function notificationChannels(): HasMany
     {
         return $this->hasMany(NotificationChannel::class);
+    }
+
+    public function workspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class);
+    }
+
+    public function ensureWorkspacesExist(): void
+    {
+        if (!$this->workspaces()->where('type', WorkspaceType::Personal)->exists()) {
+            $this->workspaces()->create([
+                'name'  => 'Privat',
+                'type'  => WorkspaceType::Personal,
+                'color' => '#3b82f6',
+            ]);
+        }
+
+        if (!$this->workspaces()->where('type', WorkspaceType::Business)->exists()) {
+            $this->workspaces()->create([
+                'name'  => 'Geschäftlich',
+                'type'  => WorkspaceType::Business,
+                'color' => '#f59e0b',
+            ]);
+        }
     }
 }

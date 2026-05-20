@@ -22,9 +22,11 @@ class ServerController extends Controller
 
     public function index(Request $request): View
     {
-        $servers = $this->serverService->getAllForUser(
+        $workspace = app('activeWorkspace');
+        $servers   = $this->serverService->getAllForUser(
             $request->user(),
-            $request->only(['status', 'search'])
+            $request->only(['status', 'search']),
+            $workspace,
         );
 
         return view('servers.index', compact('servers'));
@@ -37,7 +39,8 @@ class ServerController extends Controller
 
     public function store(StoreServerRequest $request): RedirectResponse
     {
-        $this->serverService->create($request->user(), $request->validated());
+        $workspace = app('activeWorkspace');
+        $this->serverService->create($request->user(), $request->validated(), $workspace);
 
         return redirect()->route('servers.index')->with('success', 'Server wurde erfolgreich hinzugefügt.');
     }

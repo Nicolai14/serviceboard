@@ -6,6 +6,7 @@ use App\Models\CloudflareZone;
 use App\Models\DockerContainer;
 use App\Models\DnsRecord;
 use App\Models\User;
+use App\Models\Workspace;
 
 class DashboardService
 {
@@ -14,17 +15,21 @@ class DashboardService
         private readonly AlertService $alertService,
     ) {}
 
-    public function getSummary(User $user): array
+    public function getSummary(User $user, ?Workspace $workspace = null): array
     {
-        $serverStats  = $this->serverService->getStatusSummary($user);
-        $unreadAlerts = $this->alertService->getUnreadCount($user);
-        $recentAlerts = $this->alertService->getRecentForUser($user, 6);
+        $serverStats  = $this->serverService->getStatusSummary($user, $workspace);
+        $unreadAlerts = $this->alertService->getUnreadCount($user, $workspace);
+        $recentAlerts = $this->alertService->getRecentForUser($user, 6, $workspace);
 
-        $servers = $user->servers()->with([
+        $serversQuery = $workspace
+            ? $workspace->servers()
+            : $user->servers();
+
+        $servers = $serversQuery->with([
             'metrics' => fn ($q) => $q->latest('recorded_at')->limit(1),
         ])->latest()->get();
 
-        // Docker stats across all user servers
+        // Docker stats scoped to workspace servers
         $serverIds = $servers->pluck('id');
         $allContainers = DockerContainer::whereIn('server_id', $serverIds)->get(['server_id', 'state']);
         $dockerStats = [
