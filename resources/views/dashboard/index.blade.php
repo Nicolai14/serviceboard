@@ -4,7 +4,7 @@
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
 
     {{-- Servers Online --}}
-    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
+    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none"></div>
         <div class="flex items-start justify-between mb-4">
             <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Server Online</p>
@@ -33,7 +33,7 @@
     </div>
 
     {{-- Running Containers --}}
-    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
+    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none"></div>
         <div class="flex items-start justify-between mb-4">
             <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Container Running</p>
@@ -61,7 +61,7 @@
     </div>
 
     {{-- Alerts --}}
-    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
+    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
         @if ($unread_alerts > 0)
             <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none"></div>
         @endif
@@ -83,7 +83,7 @@
     </div>
 
     {{-- DNS Records --}}
-    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
+    <div class="relative rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-5 overflow-hidden group hover:border-zinc-700 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent pointer-events-none"></div>
         <div class="flex items-start justify-between mb-4">
             <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">DNS Records</p>

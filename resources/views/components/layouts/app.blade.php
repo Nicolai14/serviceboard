@@ -5,18 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? config('app.name') }} — ServerFlow</title>
+    <style>[x-cloak] { display: none !important; }</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full bg-zinc-950 text-zinc-100 font-sans antialiased"
-      x-data="{ sidebarOpen: $persist(true) }">
+      x-data="{ sidebarOpen: $persist(true), mobileOpen: false }">
 
 <div class="flex h-full">
+
+    {{-- Mobile backdrop --}}
+    <div x-show="mobileOpen"
+         x-cloak
+         class="fixed inset-0 z-40 bg-zinc-950/80 backdrop-blur-sm lg:hidden"
+         @click="mobileOpen = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"></div>
 
     {{-- ------------------------------------------------------------------ --}}
     {{-- Sidebar                                                             --}}
     {{-- ------------------------------------------------------------------ --}}
-    <aside class="fixed inset-y-0 left-0 z-50 flex flex-col bg-zinc-900 border-r border-zinc-800/80 transition-all duration-300"
-           :class="sidebarOpen ? 'w-60' : 'w-16'">
+    <aside class="fixed inset-y-0 left-0 z-50 flex flex-col bg-zinc-900 border-r border-zinc-800/80 transition-all duration-300
+                  w-64 -translate-x-full lg:translate-x-0"
+           :class="{
+               'translate-x-0': mobileOpen,
+               'lg:w-60': sidebarOpen,
+               'lg:w-16': !sidebarOpen,
+           }">
 
         {{-- Logo --}}
         <div class="flex h-16 shrink-0 items-center gap-3 px-4 border-b border-zinc-800/80">
@@ -25,10 +43,19 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
             </div>
-            <div x-show="sidebarOpen" x-transition.opacity class="min-w-0">
+            <div x-show="sidebarOpen || mobileOpen" x-transition.opacity class="min-w-0 flex-1">
                 <p class="text-sm font-bold text-white leading-none">ServerFlow</p>
                 <p class="text-xs text-zinc-500 mt-0.5">Infrastructure Dashboard</p>
             </div>
+            {{-- Close button (mobile only) --}}
+            <button @click="mobileOpen = false"
+                    x-show="mobileOpen"
+                    x-cloak
+                    class="lg:hidden ml-auto flex items-center justify-center h-7 w-7 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         {{-- Nav --}}
@@ -36,7 +63,7 @@
 
             {{-- Monitoring --}}
             <div class="px-3">
-                <p x-show="sidebarOpen" x-transition.opacity
+                <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
                    class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
                     Monitoring
                 </p>
@@ -50,13 +77,14 @@
                 @foreach ($monitoring as $item)
                     @php $active = request()->routeIs($item['route']) || request()->routeIs($item['route'].'.*'); @endphp
                     <a href="{{ route($item['route']) }}"
+                       @click="mobileOpen = false"
                        class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
                               {{ $active ? 'bg-blue-600/15 text-blue-400 ring-1 ring-blue-600/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
-                        <svg class="h-4.5 w-4.5 h-[18px] w-[18px] shrink-0 {{ $active ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300' }}"
+                        <svg class="h-[18px] w-[18px] shrink-0 {{ $active ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300' }}"
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
                         </svg>
-                        <span x-show="sidebarOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
+                        <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
             </div>
@@ -68,7 +96,7 @@
 
             {{-- Cloud --}}
             <div class="px-3">
-                <p x-show="sidebarOpen" x-transition.opacity
+                <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
                    class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
                     Cloud
                 </p>
@@ -81,13 +109,14 @@
                 @foreach ($cloud as $item)
                     @php $active = request()->routeIs($item['route']) || request()->routeIs($item['route'].'.*'); @endphp
                     <a href="{{ route($item['route']) }}"
+                       @click="mobileOpen = false"
                        class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
                               {{ $active ? 'bg-orange-600/15 text-orange-400 ring-1 ring-orange-600/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
                         <svg class="h-[18px] w-[18px] shrink-0 {{ $active ? 'text-orange-400' : 'text-zinc-500 group-hover:text-zinc-300' }}"
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
                         </svg>
-                        <span x-show="sidebarOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
+                        <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
             </div>
@@ -99,7 +128,7 @@
 
             {{-- System --}}
             <div class="px-3">
-                <p x-show="sidebarOpen" x-transition.opacity
+                <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
                    class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
                     System
                 </p>
@@ -112,21 +141,22 @@
                 @foreach ($system as $item)
                     @php $active = request()->routeIs($item['route']); @endphp
                     <a href="{{ route($item['route']) }}"
+                       @click="mobileOpen = false"
                        class="group relative flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
                               {{ $active ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
                         <svg class="h-[18px] w-[18px] shrink-0 {{ $active ? 'text-zinc-300' : 'text-zinc-500 group-hover:text-zinc-300' }}"
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
                         </svg>
-                        <span x-show="sidebarOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
+                        <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">{{ $item['label'] }}</span>
                         @if ($item['route'] === 'alerts.index')
                             @auth
                                 @php $nb = app(\App\Services\AlertService::class)->getUnreadCount(auth()->user()); @endphp
                                 @if ($nb > 0)
-                                    <span class="ml-auto flex h-4.5 h-[18px] w-[18px] items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shrink-0"
-                                          x-show="sidebarOpen">{{ min($nb, 9) }}{{ $nb > 9 ? '+' : '' }}</span>
+                                    <span class="ml-auto flex h-[18px] w-[18px] items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shrink-0"
+                                          x-show="sidebarOpen || mobileOpen">{{ min($nb, 9) }}{{ $nb > 9 ? '+' : '' }}</span>
                                     <span class="absolute right-1.5 top-1.5 flex h-2 w-2 items-center justify-center"
-                                          x-show="!sidebarOpen">
+                                          x-show="!sidebarOpen && !mobileOpen">
                                         <span class="block h-2 w-2 rounded-full bg-red-500"></span>
                                     </span>
                                 @endif
@@ -137,10 +167,10 @@
             </div>
         </nav>
 
-        {{-- Bottom: collapse toggle + logout --}}
+        {{-- Bottom: collapse toggle (desktop) + logout --}}
         <div class="shrink-0 border-t border-zinc-800/80 p-2 space-y-1">
             <button @click="sidebarOpen = !sidebarOpen"
-                    class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-xs text-zinc-600 hover:bg-zinc-800 hover:text-zinc-300 transition-colors">
+                    class="hidden lg:flex w-full items-center gap-3 rounded-lg px-2 py-2 text-xs text-zinc-600 hover:bg-zinc-800 hover:text-zinc-300 transition-colors">
                 <svg class="h-[18px] w-[18px] shrink-0 transition-transform duration-300" :class="sidebarOpen ? '' : 'rotate-180'"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -155,7 +185,7 @@
                     <svg class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
                     </svg>
-                    <span x-show="sidebarOpen" x-transition.opacity class="truncate">Abmelden</span>
+                    <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">Abmelden</span>
                 </button>
             </form>
         </div>
@@ -165,13 +195,25 @@
     {{-- Main content                                                        --}}
     {{-- ------------------------------------------------------------------ --}}
     <div class="flex flex-1 flex-col min-h-full transition-all duration-300"
-         :class="sidebarOpen ? 'ml-60' : 'ml-16'">
+         :class="{
+             'lg:ml-60': sidebarOpen,
+             'lg:ml-16': !sidebarOpen,
+         }">
 
         {{-- Topbar --}}
-        <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-sm px-6">
+        <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-sm px-4 sm:px-6">
+
+            {{-- Hamburger (mobile only) --}}
+            <button @click="mobileOpen = !mobileOpen"
+                    class="lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-100 hover:border-zinc-700 transition-all">
+                <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                </svg>
+            </button>
+
             <h1 class="flex-1 text-base font-semibold text-zinc-100 truncate">{{ $title ?? 'Dashboard' }}</h1>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 {{-- Alerts bell --}}
                 @auth
                     @php $unreadTopbar = app(\App\Services\AlertService::class)->getUnreadCount(auth()->user()); @endphp
@@ -191,8 +233,8 @@
                 {{-- User chip --}}
                 @auth
                 <a href="{{ route('profile') }}"
-                   class="flex items-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 hover:border-zinc-700 transition-colors">
-                    <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                   class="flex items-center gap-2 sm:gap-2.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2 sm:px-3 py-1.5 hover:border-zinc-700 transition-colors">
+                    <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white shrink-0">
                         {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                     </div>
                     <span class="hidden sm:block text-sm font-medium text-zinc-300">{{ auth()->user()->name ?? '' }}</span>
@@ -202,7 +244,7 @@
         </header>
 
         {{-- Page --}}
-        <main class="flex-1 p-6">
+        <main class="flex-1 p-4 sm:p-6">
             {{-- Flash messages --}}
             @if (session('success'))
                 <div class="mb-5 flex items-center gap-3 rounded-xl border border-green-800/60 bg-green-900/20 px-4 py-3 text-sm text-green-400"

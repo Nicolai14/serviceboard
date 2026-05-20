@@ -1,23 +1,24 @@
 <x-layouts.app title="Server">
 
 {{-- Header --}}
-<div class="flex items-start justify-between gap-4 mb-6">
+<div class="flex items-start justify-between gap-3 mb-6">
     <div>
         <h1 class="text-xl font-bold text-white">Server</h1>
         <p class="text-sm text-zinc-500 mt-0.5">{{ $servers->total() }} Server verwaltet</p>
     </div>
     <a href="{{ route('servers.create') }}"
-       class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-[0_0_16px_theme(colors.blue.600/25%)]">
+       class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 sm:px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition-colors shadow-[0_0_16px_theme(colors.blue.600/25%)] shrink-0">
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
-        Server hinzufügen
+        <span class="hidden sm:inline">Server hinzufügen</span>
+        <span class="sm:hidden">Neu</span>
     </a>
 </div>
 
 {{-- Filter bar --}}
-<form method="GET" class="mb-6 flex flex-wrap gap-3">
-    <div class="relative flex-1 min-w-48 max-w-xs">
+<form method="GET" class="mb-6 flex flex-wrap gap-2 sm:gap-3">
+    <div class="relative w-full sm:flex-1 sm:min-w-48 sm:max-w-xs">
         <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
@@ -26,24 +27,26 @@
                class="w-full rounded-xl border border-zinc-700 bg-zinc-900 pl-9 pr-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
     </div>
 
-    <select name="status"
-            class="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-        <option value="">Alle Status</option>
-        <option value="online"      @selected(request('status') === 'online')>Online</option>
-        <option value="offline"     @selected(request('status') === 'offline')>Offline</option>
-        <option value="maintenance" @selected(request('status') === 'maintenance')>Wartung</option>
-    </select>
+    <div class="flex gap-2 sm:gap-3">
+        <select name="status"
+                class="flex-1 sm:flex-none rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="">Alle Status</option>
+            <option value="online"      @selected(request('status') === 'online')>Online</option>
+            <option value="offline"     @selected(request('status') === 'offline')>Offline</option>
+            <option value="maintenance" @selected(request('status') === 'maintenance')>Wartung</option>
+        </select>
 
-    <button type="submit"
-            class="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 transition-colors">
-        Filtern
-    </button>
-    @if (request('search') || request('status'))
-        <a href="{{ route('servers.index') }}"
-           class="rounded-xl border border-zinc-800 px-3 py-2.5 text-sm text-zinc-600 hover:text-zinc-400 transition-colors">
-            Zurücksetzen
-        </a>
-    @endif
+        <button type="submit"
+                class="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 transition-colors">
+            Filtern
+        </button>
+        @if (request('search') || request('status'))
+            <a href="{{ route('servers.index') }}"
+               class="rounded-xl border border-zinc-800 px-3 py-2.5 text-sm text-zinc-600 hover:text-zinc-400 transition-colors">
+                ✕
+            </a>
+        @endif
+    </div>
 </form>
 
 {{-- Empty state --}}
