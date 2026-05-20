@@ -43,16 +43,26 @@
             pollResult: null,
             csrfToken: document.querySelector('meta[name=csrf-token]').content,
 
+            async post(url) {
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' }
+                });
+                if (!r.ok) {
+                    const text = await r.text();
+                    let msg = `HTTP ${r.status}`;
+                    try { msg = JSON.parse(text).message || msg; } catch {}
+                    throw new Error(msg);
+                }
+                return r.json();
+            },
+
             async checkOnline() {
                 this.loadingOnline = true;
                 this.onlineResult = null;
                 try {
-                    const r = await fetch('{{ route('servers.check-online', $server) }}', {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' }
-                    });
-                    this.onlineResult = await r.json();
-                } catch { this.onlineResult = { online: false, message: 'Netzwerkfehler' }; }
+                    this.onlineResult = await this.post('{{ route('servers.check-online', $server) }}');
+                } catch (e) { this.onlineResult = { online: false, message: e.message }; }
                 this.loadingOnline = false;
             },
 
@@ -60,12 +70,8 @@
                 this.loadingSSH = true;
                 this.sshResult = null;
                 try {
-                    const r = await fetch('{{ route('servers.test-ssh', $server) }}', {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' }
-                    });
-                    this.sshResult = await r.json();
-                } catch { this.sshResult = { success: false, message: 'Netzwerkfehler' }; }
+                    this.sshResult = await this.post('{{ route('servers.test-ssh', $server) }}');
+                } catch (e) { this.sshResult = { success: false, message: e.message }; }
                 this.loadingSSH = false;
             },
 
@@ -73,12 +79,8 @@
                 this.loadingPoll = true;
                 this.pollResult = null;
                 try {
-                    const r = await fetch('{{ route('servers.poll-now', $server) }}', {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' }
-                    });
-                    this.pollResult = await r.json();
-                } catch { this.pollResult = { dispatched: false, message: 'Netzwerkfehler' }; }
+                    this.pollResult = await this.post('{{ route('servers.poll-now', $server) }}');
+                } catch (e) { this.pollResult = { dispatched: false, message: e.message }; }
                 this.loadingPoll = false;
             },
         }"
