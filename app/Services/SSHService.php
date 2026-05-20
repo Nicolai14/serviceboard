@@ -38,7 +38,7 @@ SH;
     public function isReachable(Server $server): bool
     {
         $socket = @fsockopen(
-            $server->hostname,
+            $server->ip_address ?: $server->hostname,
             $server->ssh_port,
             $errno,
             $errstr,
@@ -131,7 +131,7 @@ SH;
 
     private function connect(Server $server): SSH2
     {
-        $ssh = new SSH2($server->hostname, $server->ssh_port, self::CONNECT_TIMEOUT);
+        $ssh = new SSH2($server->ip_address ?: $server->hostname, $server->ssh_port, self::CONNECT_TIMEOUT);
 
         $authenticated = match ($server->ssh_auth_method) {
             'key'      => $this->loginWithKey($ssh, $server),

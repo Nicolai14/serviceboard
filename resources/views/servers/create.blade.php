@@ -55,10 +55,10 @@
                         </div>
                         <div>
                             <label for="ssh_user" class="block text-sm font-medium text-zinc-400 mb-1.5">SSH-User</label>
-                            <input type="text" id="ssh_user" name="ssh_user" value="{{ old('ssh_user', 'root') }}"
+                            <input type="text" id="ssh_user" name="ssh_user" value="{{ old('ssh_user', 'monitor') }}"
                                    class="w-full rounded-lg border px-3.5 py-2.5 text-sm bg-zinc-800 border-zinc-700 text-zinc-100
                                           placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                                   placeholder="root">
+                                   placeholder="monitor">
                         </div>
                     </div>
                 </div>

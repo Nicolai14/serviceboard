@@ -18,7 +18,7 @@ class ServerFactory extends Factory
             'hostname'        => fake()->domainName(),
             'ip_address'      => fake()->ipv4(),
             'ssh_port'        => 22,
-            'ssh_user'        => 'root',
+            'ssh_user'        => 'monitor',
             'ssh_auth_method' => 'password',
             'ssh_password'    => 'secret',
             'status'          => 'online',
