@@ -94,7 +94,7 @@ jobs:
             git pull origin main
             npm install
             npm run build
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm \
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm --user root \
               app composer install --no-dev --optimize-autoloader --no-interaction
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
             sleep 8
@@ -102,4 +102,5 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan config:cache
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan route:cache
             docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan view:clear
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T --user root app php artisan storage:link
             echo "Deploy successful"

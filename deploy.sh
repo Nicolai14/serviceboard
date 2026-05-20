@@ -8,7 +8,7 @@ cd "$DEPLOY_DIR"
 git pull origin main
 
 echo "==> Installing PHP dependencies..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm app composer install --no-dev --optimize-autoloader --no-interaction
+docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm --user root app composer install --no-dev --optimize-autoloader --no-interaction
 
 echo "==> Building frontend assets..."
 npm ci --prefer-offline
@@ -27,6 +27,6 @@ echo "==> Caching config / routes / views..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan config:cache
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan route:cache
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan view:clear
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan storage:link
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T --user root app php artisan storage:link
 
 echo "==> Done. ServerFlow is up at http://serverflow.careflow-pflege.de"
