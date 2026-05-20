@@ -3,14 +3,37 @@ services:
     ports:
       - "127.0.0.1:8085:80"
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 64M
 
   app:
     restart: always
     environment:
       - PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  queue:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
   mysql:
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 192M
 
   redis:
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 32M
