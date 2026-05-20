@@ -27,6 +27,9 @@ class Server extends Model
         'os',
         'tags',
         'notes',
+        'last_seen_at',
+        'last_polled_at',
+        'poll_failures',
     ];
 
     protected $casts = [
