@@ -49,16 +49,22 @@
                 }
                 return Object.entries(map)
                     .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([name, items]) => ({
-                        name,
-                        containers: items,
-                        running: items.filter(c => c.state === 'running').length,
-                        total: items.length,
-                    }));
+                    .map(([name, items]) => {
+                        const cpuItems = items.filter(c => c.cpu_percent !== null);
+                        const memItems = items.filter(c => c.memory_usage_mb !== null);
+                        return {
+                            name,
+                            containers: items,
+                            running: items.filter(c => c.state === 'running').length,
+                            total: items.length,
+                            cpu: cpuItems.length ? cpuItems.reduce((s, c) => s + c.cpu_percent, 0) : null,
+                            mem: memItems.length ? memItems.reduce((s, c) => s + c.memory_usage_mb, 0) : null,
+                        };
+                    });
             },
 
             isOpen(name) {
-                return this.openGroups[name] !== false;
+                return this.openGroups[name] === true;
             },
 
             toggle(name) {
@@ -167,7 +173,17 @@
                                     <span x-text="group.total === 1 ? ' Container' : ' Container'"></span>
                                 </span>
                             </div>
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-4">
+                                <template x-if="group.cpu !== null">
+                                    <span class="text-xs text-zinc-500">
+                                        CPU <span :class="group.cpu>=80?'text-red-400':group.cpu>=50?'text-yellow-400':'text-zinc-300'" x-text="group.cpu.toFixed(1)+'%'"></span>
+                                    </span>
+                                </template>
+                                <template x-if="group.mem !== null">
+                                    <span class="text-xs text-zinc-500">
+                                        RAM <span class="text-zinc-300" x-text="group.mem >= 1024 ? (group.mem/1024).toFixed(1)+'GB' : Math.round(group.mem)+'MB'"></span>
+                                    </span>
+                                </template>
                                 <span class="text-xs text-zinc-500">
                                     <span class="text-green-400 font-medium" x-text="group.running"></span>/<span x-text="group.total"></span> running
                                 </span>
