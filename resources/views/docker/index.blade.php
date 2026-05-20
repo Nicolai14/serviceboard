@@ -63,11 +63,36 @@
                         'status_text'     => $c->status_text,
                         'cpu_percent'     => $c->cpu_percent,
                         'memory_usage_mb' => $c->memory_usage_mb,
+                        'memory_limit_mb' => $c->memory_limit_mb,
                         'memory_percent'  => $c->memory_percent,
                         'ports'           => $c->ports ?? [],
                     ])->values()) }},
+                    openGroups: {},
                     syncing: false,
                     csrfToken: document.querySelector('meta[name=csrf-token]').content,
+
+                    get running()    { return this.containers.filter(c => c.state === 'running').length },
+
+                    get groups() {
+                        const map = {};
+                        for (const c of this.containers) {
+                            const key = c.name.match(/^([^_-]+)/)?.[1] ?? c.name;
+                            if (!map[key]) map[key] = [];
+                            map[key].push(c);
+                        }
+                        return Object.entries(map)
+                            .sort(([a], [b]) => a.localeCompare(b))
+                            .map(([name, items]) => ({
+                                name,
+                                containers: items,
+                                running: items.filter(c => c.state === 'running').length,
+                                total: items.length,
+                            }));
+                    },
+
+                    isOpen(name) { return this.openGroups[name] !== false; },
+                    toggle(name) { this.openGroups[name] = !this.isOpen(name); },
+
                     async refresh() {
                         try {
                             const r = await fetch('{{ route('servers.docker.status-json', $server) }}', { headers:{'Accept':'application/json'} });
@@ -103,7 +128,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <span class="text-xs text-zinc-600">
-                            <span class="text-green-400 font-medium" x-text="containers.filter(c=>c.state==='running').length"></span>
+                            <span class="text-green-400 font-medium" x-text="running"></span>
                             / <span x-text="containers.length"></span> running
                         </span>
                         <button @click="syncNow()" :disabled="syncing"
@@ -118,82 +143,108 @@
                     </div>
                 </div>
 
-                {{-- Container table --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-zinc-800/40">
-                                <th class="px-5 py-2.5 text-left text-xs font-medium text-zinc-500">Name</th>
-                                <th class="px-4 py-2.5 text-left text-xs font-medium text-zinc-500 hidden md:table-cell">Image</th>
-                                <th class="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Status</th>
-                                <th class="px-4 py-2.5 text-left text-xs font-medium text-zinc-500 w-36 hidden sm:table-cell">CPU</th>
-                                <th class="px-4 py-2.5 text-left text-xs font-medium text-zinc-500 w-36 hidden sm:table-cell">RAM</th>
-                                <th class="px-4 py-2.5 text-left text-xs font-medium text-zinc-500 hidden lg:table-cell">Ports</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-zinc-800/40">
-                            <template x-for="c in containers" :key="c.container_id">
-                                <tr class="hover:bg-zinc-800/30 transition-colors">
-                                    <td class="px-5 py-3">
-                                        <div class="flex items-center gap-2">
-                                            <span class="h-1.5 w-1.5 rounded-full shrink-0"
-                                                  :class="c.state==='running'?'bg-green-500 shadow-[0_0_4px_theme(colors.green.500)]':'bg-zinc-600'"></span>
-                                            <span class="text-xs font-mono font-medium text-zinc-100" x-text="c.name"></span>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3 hidden md:table-cell">
-                                        <span class="text-xs font-mono text-zinc-500 truncate max-w-48 block" x-text="c.image"></span>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize"
-                                              :class="stateColor(c.state)" x-text="c.state"></span>
-                                    </td>
-                                    <td class="px-4 py-3 hidden sm:table-cell">
-                                        <template x-if="c.cpu_percent !== null">
-                                            <div class="space-y-0.5">
-                                                <div class="flex justify-between text-xs">
-                                                    <span class="text-zinc-600">CPU</span>
-                                                    <span :class="c.cpu_percent>=80?'text-red-400':c.cpu_percent>=50?'text-yellow-400':'text-zinc-400'" x-text="c.cpu_percent+'%'"></span>
-                                                </div>
-                                                <div class="h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
-                                                    <div class="h-1 rounded-full" :class="c.cpu_percent>=80?'bg-red-500':c.cpu_percent>=50?'bg-yellow-500':'bg-blue-500'" :style="`width:${Math.min(100,c.cpu_percent)}%`"></div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <template x-if="c.cpu_percent===null"><span class="text-xs text-zinc-700">—</span></template>
-                                    </td>
-                                    <td class="px-4 py-3 hidden sm:table-cell">
-                                        <template x-if="c.memory_usage_mb !== null">
-                                            <div class="space-y-0.5">
-                                                <div class="flex justify-between text-xs">
-                                                    <span class="text-zinc-600">RAM</span>
-                                                    <span class="text-zinc-400" x-text="c.memory_usage_mb+'MB'"></span>
-                                                </div>
-                                                <div class="h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
-                                                    <div class="h-1 rounded-full" :class="(c.memory_percent??0)>=85?'bg-red-500':(c.memory_percent??0)>=60?'bg-yellow-500':'bg-green-500'" :style="`width:${Math.min(100,c.memory_percent??0)}%`"></div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <template x-if="c.memory_usage_mb===null"><span class="text-xs text-zinc-700">—</span></template>
-                                    </td>
-                                    <td class="px-4 py-3 hidden lg:table-cell">
-                                        <template x-if="c.ports && c.ports.length > 0">
-                                            <div class="flex flex-wrap gap-1">
-                                                <template x-for="p in c.ports.slice(0,3)" :key="p.host+p.container">
-                                                    <span class="rounded-md border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-xs font-mono text-zinc-400" x-text="`${p.host}:${p.container}`"></span>
-                                                </template>
-                                                <template x-if="c.ports.length>3">
-                                                    <span class="rounded-md border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-600" x-text="`+${c.ports.length-3}`"></span>
-                                                </template>
-                                            </div>
-                                        </template>
-                                        <template x-if="!c.ports||c.ports.length===0"><span class="text-xs text-zinc-700">—</span></template>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
+                {{-- Grouped container list --}}
+                <template x-if="containers.length > 0">
+                    <div class="divide-y divide-zinc-800/40">
+                        <template x-for="group in groups" :key="group.name">
+                            <div>
+                                {{-- Group row --}}
+                                <button
+                                    @click="toggle(group.name)"
+                                    class="w-full flex items-center justify-between px-5 py-3 hover:bg-zinc-800/40 transition-colors"
+                                >
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="h-1.5 w-1.5 rounded-full shrink-0"
+                                              :class="group.running === group.total
+                                                  ? 'bg-green-500 shadow-[0_0_4px_theme(colors.green.500)]'
+                                                  : group.running > 0 ? 'bg-yellow-500' : 'bg-zinc-600'">
+                                        </span>
+                                        <span class="text-xs font-semibold font-mono text-zinc-200" x-text="group.name"></span>
+                                        <span class="rounded-full border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-500"
+                                              x-text="group.total + ' Container'"></span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-zinc-600">
+                                            <span class="text-green-400" x-text="group.running"></span>/<span x-text="group.total"></span> running
+                                        </span>
+                                        <svg class="h-3.5 w-3.5 text-zinc-600 transition-transform duration-200"
+                                             :class="isOpen(group.name) ? 'rotate-180' : ''"
+                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {{-- Container rows inside group --}}
+                                <div x-show="isOpen(group.name)" x-collapse>
+                                    <table class="w-full text-sm">
+                                        <tbody class="divide-y divide-zinc-800/30">
+                                            <template x-for="c in group.containers" :key="c.container_id">
+                                                <tr class="hover:bg-zinc-800/20 transition-colors">
+                                                    <td class="pl-10 pr-4 py-2.5">
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="h-1.5 w-1.5 rounded-full shrink-0"
+                                                                  :class="c.state==='running'?'bg-green-500 shadow-[0_0_4px_theme(colors.green.500)]':'bg-zinc-600'"></span>
+                                                            <span class="text-xs font-mono text-zinc-300" x-text="c.name"></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 hidden md:table-cell">
+                                                        <span class="text-xs font-mono text-zinc-600 truncate max-w-40 block" x-text="c.image"></span>
+                                                    </td>
+                                                    <td class="px-4 py-2.5">
+                                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize"
+                                                              :class="stateColor(c.state)" x-text="c.state"></span>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 hidden sm:table-cell w-32">
+                                                        <template x-if="c.cpu_percent !== null">
+                                                            <div class="space-y-0.5">
+                                                                <div class="flex justify-between text-xs">
+                                                                    <span class="text-zinc-600">CPU</span>
+                                                                    <span :class="c.cpu_percent>=80?'text-red-400':c.cpu_percent>=50?'text-yellow-400':'text-zinc-400'" x-text="c.cpu_percent+'%'"></span>
+                                                                </div>
+                                                                <div class="h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
+                                                                    <div class="h-1 rounded-full" :class="c.cpu_percent>=80?'bg-red-500':c.cpu_percent>=50?'bg-yellow-500':'bg-blue-500'" :style="`width:${Math.min(100,c.cpu_percent)}%`"></div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="c.cpu_percent===null"><span class="text-xs text-zinc-700">—</span></template>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 hidden sm:table-cell w-32">
+                                                        <template x-if="c.memory_usage_mb !== null">
+                                                            <div class="space-y-0.5">
+                                                                <div class="flex justify-between text-xs">
+                                                                    <span class="text-zinc-600">RAM</span>
+                                                                    <span class="text-zinc-400" x-text="c.memory_usage_mb+'MB'"></span>
+                                                                </div>
+                                                                <div class="h-1 w-full rounded-full bg-zinc-800 overflow-hidden">
+                                                                    <div class="h-1 rounded-full" :class="(c.memory_percent??0)>=85?'bg-red-500':(c.memory_percent??0)>=60?'bg-yellow-500':'bg-green-500'" :style="`width:${Math.min(100,c.memory_percent??0)}%`"></div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="c.memory_usage_mb===null"><span class="text-xs text-zinc-700">—</span></template>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 hidden lg:table-cell">
+                                                        <template x-if="c.ports && c.ports.length > 0">
+                                                            <div class="flex flex-wrap gap-1">
+                                                                <template x-for="p in c.ports.slice(0,3)" :key="p.host+p.container">
+                                                                    <span class="rounded-md border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-xs font-mono text-zinc-400" x-text="`${p.host}:${p.container}`"></span>
+                                                                </template>
+                                                                <template x-if="c.ports.length>3">
+                                                                    <span class="rounded-md border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-600" x-text="`+${c.ports.length-3}`"></span>
+                                                                </template>
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="!c.ports||c.ports.length===0"><span class="text-xs text-zinc-700">—</span></template>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
 
                 <template x-if="containers.length===0">
                     <div class="py-8 text-center">
