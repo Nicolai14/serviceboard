@@ -1,0 +1,105 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # -----------------------------------------------------------------------
+  # 1) Tests
+  # -----------------------------------------------------------------------
+  test:
+    name: Tests (PHP 8.4)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3, openssl, bcmath, ctype, json
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress
+
+      - run: cp .env.example .env && php artisan key:generate
+
+      - run: php artisan test --parallel
+
+  # -----------------------------------------------------------------------
+  # 2) Build Assets
+  # -----------------------------------------------------------------------
+  build-assets:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm install
+      - run: npm run build
+
+      - name: Verify build output
+        run: test -d public/build
+
+  # -----------------------------------------------------------------------
+  # 3) Lint
+  # -----------------------------------------------------------------------
+  lint:
+    name: PHP Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Check syntax
+        run: find app config routes database -name "*.php" | xargs php -l | grep -v "No syntax errors" | grep "." && exit 1 || exit 0
+
+  # -----------------------------------------------------------------------
+  # 4) Deploy (nur main-Branch nach Push)
+  # -----------------------------------------------------------------------
+  deploy:
+    name: Deploy to Hetzner
+    needs: [test, build-assets, lint]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            cd /root/serverflow
+            git pull origin main
+            npm install
+            npm run build
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm \
+              app composer install --no-dev --optimize-autoloader --no-interaction
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+            sleep 8
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan migrate --force
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan config:cache
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan route:cache
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app php artisan view:clear
+            echo "Deploy successful"
