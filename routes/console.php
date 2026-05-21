@@ -11,8 +11,8 @@ Artisan::command('inspire', function () {
 // Every minute: TCP ping → update online/offline status
 Schedule::command('servers:check --queue')->everyMinute()->withoutOverlapping();
 
-// Every 5 minutes: SSH collect → CPU/RAM/Disk metrics
-Schedule::command('servers:metrics --queue')->everyFiveMinutes()->withoutOverlapping();
+// Every minute: SSH collect → CPU/RAM/Disk metrics
+Schedule::command('servers:metrics --queue')->everyMinute()->withoutOverlapping();
 
 // Every 2 minutes: SSH → docker ps + docker stats
 Schedule::command('servers:docker --queue')->everyTwoMinutes()->withoutOverlapping();
