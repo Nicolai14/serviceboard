@@ -23,6 +23,7 @@ class DockerContainer extends Model
         'memory_percent',
         'ports',
         'synced_at',
+        'notify_on_down',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class DockerContainer extends Model
         'memory_limit_mb'  => 'float',
         'memory_percent'   => 'float',
         'synced_at'        => 'datetime',
+        'notify_on_down'   => 'boolean',
     ];
 
     public function server(): BelongsTo

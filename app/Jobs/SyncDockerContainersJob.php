@@ -6,6 +6,7 @@ use App\Exceptions\SSHException;
 use App\Models\Server;
 use App\Services\AlertService;
 use App\Services\DockerService;
+use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,7 +24,7 @@ class SyncDockerContainersJob implements ShouldQueue
 
     public function __construct(public readonly int $serverId) {}
 
-    public function handle(DockerService $dockerService, AlertService $alertService): void
+    public function handle(DockerService $dockerService, AlertService $alertService, NotificationService $notificationService): void
     {
         $server = Server::find($this->serverId);
 
@@ -34,8 +35,7 @@ class SyncDockerContainersJob implements ShouldQueue
         try {
             $count = $dockerService->sync($server);
 
-            // Alert when previously-running containers go down after a sync.
-            $this->checkForStoppedContainers($server, $alertService);
+            $this->checkForStoppedContainers($server, $alertService, $notificationService);
 
             logger()->info("DockerSync: {$count} containers synced for server {$server->name}");
         } catch (SSHException $e) {
@@ -48,9 +48,8 @@ class SyncDockerContainersJob implements ShouldQueue
         logger()->error("SyncDockerContainersJob failed for server #{$this->serverId}: {$e->getMessage()}");
     }
 
-    private function checkForStoppedContainers(Server $server, AlertService $alertService): void
+    private function checkForStoppedContainers(Server $server, AlertService $alertService, NotificationService $notificationService): void
     {
-        // Find containers that are NOT running (excluding intentionally stopped ones flagged in last sync).
         $stopped = $server->dockerContainers()
             ->where('state', '!=', 'running')
             ->where('state', '!=', 'created')
@@ -73,6 +72,14 @@ class SyncDockerContainersJob implements ShouldQueue
                     "Container \"{$container->name}\" ist nicht mehr aktiv ({$container->state})",
                     ['container_id' => $container->container_id, 'image' => $container->image]
                 );
+
+                if ($container->notify_on_down) {
+                    $notificationService->dispatch(
+                        $server->user,
+                        "🚨 Container down: {$container->name}",
+                        "Server: *{$server->name}*\nContainer: `{$container->name}`\nStatus: {$container->state}\nImage: {$container->image}"
+                    );
+                }
             }
         }
     }

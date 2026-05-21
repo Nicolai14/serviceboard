@@ -31,6 +31,8 @@
                 'port_summary'    => $c->port_summary,
                 'ports'           => $c->ports ?? [],
                 'synced_at'       => $c->synced_at?->diffForHumans(),
+                'notify_on_down'  => $c->notify_on_down,
+                'notify_url'      => route('servers.docker.container.notify', [$server, $c]),
             ])->values()) }},
             openGroups: {},
             syncing: false,
@@ -94,6 +96,17 @@
                     if (d.dispatched) { setTimeout(() => { this.refresh(); this.syncing = false; }, 3500); }
                     else { this.syncing = false; }
                 } catch { this.syncing = false; }
+            },
+
+            async toggleNotify(c) {
+                try {
+                    const r = await fetch(c.notify_url, {
+                        method: 'PATCH',
+                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' }
+                    });
+                    const d = await r.json();
+                    c.notify_on_down = d.notify_on_down;
+                } catch {}
             },
 
             stateColor(state) {
@@ -216,7 +229,24 @@
                                                 <p class="text-xs text-zinc-700 mt-0.5" x-text="c.status_text"></p>
                                             </div>
 
-                                            <div class="shrink-0">
+                                            <div class="shrink-0 flex flex-col items-end gap-2">
+                                                {{-- Telegram notify toggle --}}
+                                                <button @click="toggleNotify(c)"
+                                                        :title="c.notify_on_down ? 'Telegram-Benachrichtigung deaktivieren' : 'Telegram-Benachrichtigung aktivieren'"
+                                                        class="flex items-center gap-1.5 text-xs transition-colors"
+                                                        :class="c.notify_on_down ? 'text-blue-400' : 'text-zinc-600 hover:text-zinc-400'">
+                                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                                    </svg>
+                                                    <span x-text="c.notify_on_down ? 'Notify an' : 'Notify aus'"></span>
+                                                    {{-- Toggle pill --}}
+                                                    <span class="relative inline-flex h-4 w-7 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200"
+                                                          :class="c.notify_on_down ? 'bg-blue-500' : 'bg-zinc-700'">
+                                                        <span class="inline-block h-3 w-3 rounded-full bg-white shadow transform transition-transform duration-200"
+                                                              :class="c.notify_on_down ? 'translate-x-3' : 'translate-x-0'"></span>
+                                                    </span>
+                                                </button>
+
                                                 <template x-if="c.ports && c.ports.length > 0">
                                                     <div class="flex flex-wrap gap-1 justify-end">
                                                         <template x-for="p in c.ports" :key="p.host + p.container">

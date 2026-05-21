@@ -54,9 +54,10 @@ Route::middleware(['auth', 'workspace'])->group(function () {
 
         // Docker sub-resource
         Route::prefix('docker')->name('docker.')->group(function () {
-            Route::get('/',            [DockerController::class, 'serverIndex'])->name('index');
-            Route::get('/status-json', [DockerController::class, 'statusJson'])->name('status-json');
-            Route::post('/sync',       [DockerController::class, 'syncNow'])->name('sync');
+            Route::get('/',                                    [DockerController::class, 'serverIndex'])->name('index');
+            Route::get('/status-json',                        [DockerController::class, 'statusJson'])->name('status-json');
+            Route::post('/sync',                              [DockerController::class, 'syncNow'])->name('sync');
+            Route::patch('/{container}/notify',               [DockerController::class, 'toggleNotify'])->name('container.notify');
         });
 
         // Services

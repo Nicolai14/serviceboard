@@ -81,6 +81,8 @@ class DockerController extends Controller
                 'memory_percent'   => $c->memory_percent !== null ? round($c->memory_percent, 1) : null,
                 'ports'            => $c->ports ?? [],
                 'port_summary'     => $c->port_summary,
+                'notify_on_down'   => $c->notify_on_down,
+                'notify_url'       => route('servers.docker.container.notify', [$server, $c]),
             ])->values(),
         ]);
     }
@@ -89,6 +91,18 @@ class DockerController extends Controller
      * POST /servers/{server}/docker/sync
      * Dispatch an immediate sync job and return JSON.
      */
+    public function toggleNotify(Request $request, Server $server, DockerContainer $container): JsonResponse
+    {
+        $this->authorize('view', $server);
+        abort_unless($container->server_id === $server->id, 404);
+
+        $container->update(['notify_on_down' => !$container->notify_on_down]);
+
+        return response()->json([
+            'notify_on_down' => $container->notify_on_down,
+        ]);
+    }
+
     public function syncNow(Server $server): JsonResponse
     {
         $this->authorize('view', $server);
