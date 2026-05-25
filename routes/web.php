@@ -39,6 +39,9 @@ Route::middleware(['auth', 'workspace'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::patch('/profile/visibility', [ProfileController::class, 'updateVisibility'])->name('profile.visibility');
+
+    Route::get('/u/{user}', [DashboardController::class, 'publicShow'])->name('dashboard.public');
 
     // Global Docker overview (all servers)
     Route::get('/docker', [DockerController::class, 'index'])->name('docker.index');

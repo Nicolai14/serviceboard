@@ -179,6 +179,43 @@
                 <div class="border-t border-zinc-800/60"></div>
             </div>
 
+            {{-- Public Boards --}}
+            @auth
+                @php
+                    $publicUsers = \App\Models\User::query()
+                        ->public()
+                        ->where('id', '!=', auth()->id())
+                        ->orderBy('name')
+                        ->get(['id', 'name']);
+                @endphp
+                @if ($publicUsers->isNotEmpty())
+                    <div class="px-3">
+                        <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
+                           class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
+                            Public Boards
+                        </p>
+                        @foreach ($publicUsers as $pu)
+                            @php $active = request()->routeIs('dashboard.public') && request()->route('user')?->id === $pu->id; @endphp
+                            <a href="{{ route('dashboard.public', $pu) }}"
+                               @click="mobileOpen = false"
+                               class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
+                                      {{ $active ? 'bg-purple-600/15 text-purple-400 ring-1 ring-purple-600/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
+                                <span class="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-zinc-800 text-[10px] font-bold uppercase
+                                             {{ $active ? 'text-purple-300' : 'text-zinc-400' }}">
+                                    {{ strtoupper(substr($pu->name, 0, 1)) }}
+                                </span>
+                                <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">{{ $pu->name }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+
+                    {{-- Divider --}}
+                    <div class="px-3">
+                        <div class="border-t border-zinc-800/60"></div>
+                    </div>
+                @endif
+            @endauth
+
             {{-- System --}}
             <div class="px-3">
                 <p x-show="sidebarOpen || mobileOpen" x-transition.opacity

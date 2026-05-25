@@ -34,6 +34,36 @@
             </form>
         </div>
 
+        {{-- Dashboard Visibility --}}
+        <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <h2 class="text-sm font-semibold text-zinc-100 mb-1">Dashboard-Sichtbarkeit</h2>
+            <p class="text-xs text-zinc-500 mb-5">Wenn aktiv, können andere eingeloggte User dein Dashboard read-only ansehen.</p>
+
+            <form method="POST" action="{{ route('profile.visibility') }}">
+                @csrf
+                @method('PATCH')
+
+                <label class="flex items-center justify-between gap-4 cursor-pointer">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-zinc-200">Dashboard öffentlich machen</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">
+                            URL für andere: <code class="text-blue-400">{{ url('/u/' . $user->id) }}</code>
+                        </p>
+                    </div>
+                    <input type="hidden" name="dashboard_public" value="0">
+                    <input type="checkbox" name="dashboard_public" value="1"
+                           {{ $user->dashboard_public ? 'checked' : '' }}
+                           onchange="this.form.submit()"
+                           class="sr-only peer">
+                    <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200
+                                 {{ $user->dashboard_public ? 'bg-blue-500' : 'bg-zinc-700' }}">
+                        <span class="inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform duration-200
+                                     {{ $user->dashboard_public ? 'translate-x-5' : 'translate-x-0' }}"></span>
+                    </span>
+                </label>
+            </form>
+        </div>
+
         {{-- Change Password --}}
         <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <h2 class="text-sm font-semibold text-zinc-100 mb-5">Passwort ändern</h2>

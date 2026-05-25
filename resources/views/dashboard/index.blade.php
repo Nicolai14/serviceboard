@@ -1,4 +1,20 @@
-<x-layouts.app title="Übersicht">
+<x-layouts.app title="{{ isset($viewing_public_user) ? $viewing_public_user->name . ' — Public Dashboard' : 'Übersicht' }}">
+
+@isset($viewing_public_user)
+    <div class="mb-6 flex items-center gap-3 rounded-xl border border-purple-700/40 bg-purple-900/15 px-4 py-3">
+        <svg class="h-5 w-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+        <div class="min-w-0 flex-1">
+            <p class="text-sm font-semibold text-purple-200">Read-only Ansicht</p>
+            <p class="text-xs text-purple-400/70">Du siehst das öffentliche Dashboard von <strong>{{ $viewing_public_user->name }}</strong></p>
+        </div>
+        <a href="{{ route('dashboard') }}" class="text-xs font-medium text-purple-300 hover:text-purple-200 transition-colors">
+            ← Zurück zu meinem Dashboard
+        </a>
+    </div>
+@endisset
 
 {{-- Hero stat strip --}}
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
@@ -102,6 +118,49 @@
         </div>
     </div>
 </div>
+
+{{-- Aggregate Resource Bar --}}
+@if (!empty($resource_stats['cpu_avg']) || !empty($resource_stats['ram_used_gb']))
+    @php
+        $cpu = $resource_stats['cpu_avg'] ?? 0;
+        $ramPct = $resource_stats['ram_pct'] ?? 0;
+        $cpuBar = $cpu >= 80 ? 'bg-red-500' : ($cpu >= 50 ? 'bg-yellow-500' : 'bg-green-500');
+        $ramBar = $ramPct >= 85 ? 'bg-red-500' : ($ramPct >= 60 ? 'bg-yellow-500' : 'bg-green-500');
+    @endphp
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+
+        {{-- Aggregate CPU --}}
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Ø CPU (alle Server)</p>
+                <span class="text-xs text-zinc-600">{{ $resource_stats['server_count'] }} Server</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-bold text-white">{{ $cpu }}<span class="text-2xl text-zinc-500">%</span></span>
+            </div>
+            <div class="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                <div class="h-2 rounded-full {{ $cpuBar }} transition-all duration-500"
+                     style="width: {{ min(100, $cpu) }}%"></div>
+            </div>
+        </div>
+
+        {{-- Aggregate RAM --}}
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Gesamt RAM</p>
+                <span class="text-xs text-zinc-600">{{ $ramPct }}% in Use</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-bold text-white">{{ $resource_stats['ram_used_gb'] }}<span class="text-2xl text-zinc-500"> / {{ $resource_stats['ram_total_gb'] }} GB</span></span>
+            </div>
+            <div class="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                <div class="h-2 rounded-full {{ $ramBar }} transition-all duration-500"
+                     style="width: {{ min(100, $ramPct) }}%"></div>
+            </div>
+        </div>
+
+    </div>
+@endif
 
 {{-- Server Grid --}}
 <div class="flex items-center justify-between mb-4">
@@ -243,5 +302,46 @@
         @endif
     </div>
 </div>
+
+{{-- Activity Feed --}}
+@if (!empty($activity_feed))
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden mt-6">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-800/60">
+            <div class="flex items-center gap-2.5">
+                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10">
+                    <svg class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-sm font-semibold text-zinc-100">Aktivität</h2>
+                <span class="text-xs text-zinc-600">letzte 8 Events</span>
+            </div>
+        </div>
+        <ul class="divide-y divide-zinc-800/60">
+            @foreach ($activity_feed as $event)
+                @php
+                    $sev = $event['severity'];
+                    $dotClass = match(true) {
+                        $event['resolved']     => 'bg-zinc-600',
+                        $sev === 'critical'    => 'bg-red-500 shadow-[0_0_5px_theme(colors.red.500)]',
+                        $sev === 'warning'     => 'bg-yellow-500 shadow-[0_0_5px_theme(colors.yellow.500)]',
+                        $sev === 'info'        => 'bg-blue-500 shadow-[0_0_5px_theme(colors.blue.500)]',
+                        default                => 'bg-zinc-500',
+                    };
+                @endphp
+                <li class="flex items-start gap-3 px-5 py-3 text-sm">
+                    <span class="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 {{ $dotClass }}"></span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-zinc-200 {{ $event['resolved'] ? 'line-through text-zinc-500' : '' }}">{{ $event['message'] }}</p>
+                        <p class="text-xs text-zinc-600 mt-0.5">
+                            <span class="font-mono">{{ $event['server'] }}</span> · {{ $event['time_ago'] }}
+                            @if ($event['resolved']) · <span class="text-green-500">resolved</span> @endif
+                        </p>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 </x-layouts.app>

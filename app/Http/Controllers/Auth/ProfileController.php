@@ -28,6 +28,20 @@ class ProfileController extends Controller
         return back()->with('success', 'Profil wurde aktualisiert.');
     }
 
+    public function updateVisibility(Request $request): RedirectResponse
+    {
+        $request->validate(['dashboard_public' => ['nullable']]);
+
+        $request->user()->update([
+            'dashboard_public' => $request->boolean('dashboard_public'),
+        ]);
+
+        return back()->with('success', $request->user()->dashboard_public
+            ? 'Dein Dashboard ist jetzt öffentlich sichtbar.'
+            : 'Dein Dashboard ist jetzt wieder privat.'
+        );
+    }
+
     public function updatePassword(Request $request): RedirectResponse
     {
         $validated = $request->validate([

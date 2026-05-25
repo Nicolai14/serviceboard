@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'dashboard_public',
     ];
 
     protected $hidden = [
@@ -32,7 +33,13 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'dashboard_public'  => 'boolean',
         ];
+    }
+
+    public function scopePublic($query)
+    {
+        return $query->where('dashboard_public', true);
     }
 
     public function servers(): HasMany
