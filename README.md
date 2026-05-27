@@ -9,8 +9,9 @@ Server-Monitoring Dashboard auf Basis von Laravel 13, Tailwind CSS und Alpine.js
 - **Docker-Monitoring** — Container-Status pro Server und globale Übersicht
 - **Cloudflare-Integration** — DNS-Einträge und Zonen-Status
 - **Workspaces** — Trennung zwischen Privat (🏠) und Geschäftlich (💼)
-- **Alerts** — Benachrichtigungen bei Ausfällen oder Schwellenwertüberschreitungen
-- **Services** — Verwaltung von Diensten pro Server
+- **Alerts** — Benachrichtigungen bei Ausfällen oder Schwellenwertüberschreitungen, mit pro Server konfigurierbaren CPU/RAM/Disk-Schwellwerten
+- **Services** — Verwaltung von Diensten pro Server inkl. HTTP/TCP-Health-Checks mit Status-Tracking und Alerts
+- **Deployments** — Git-Pull, Shell-Script oder Docker-Compose per SSH ausführen, mit Live-Log
 
 ## Stack
 
@@ -45,7 +46,7 @@ Pushes auf `main` deployen automatisch via GitHub Actions auf den Hetzner-Server
 Die Pipeline läuft Tests, baut Assets und deployt per SSH:
 
 ```
-push → test (paratest) → build-assets → lint → deploy
+push → test (paratest) → build-assets → lint → static-analysis (Larastan) → deploy
 ```
 
 ### Voraussetzungen (Server)
