@@ -54,6 +54,32 @@ class LoginTest extends TestCase
         ])->assertSessionHasErrors('email');
     }
 
+    public function test_login_is_rate_limited_after_repeated_failures(): void
+    {
+        $user = User::factory()->create();
+
+        // Exhaust the allowed attempts with a wrong password.
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/login', [
+                'email'    => $user->email,
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        // The next attempt — even with the correct password — is locked out.
+        $response = $this->post('/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertStringContainsString(
+            'Zu viele Anmeldeversuche',
+            session('errors')->first('email'),
+        );
+        $this->assertGuest();
+    }
+
     public function test_user_can_logout(): void
     {
         $user = User::factory()->create();
