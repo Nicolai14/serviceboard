@@ -1,0 +1,529 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cpu_usage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/PollMetricsCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$disk_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/PollMetricsCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$load_average\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/PollMetricsCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$memory_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/PollMetricsCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uptime_seconds\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/PollMetricsCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncCloudflareCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$paused\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncCloudflareCommand.php
+
+		-
+			message: '#^Parameter \#1 \$zone of method App\\Services\\CloudflareService\:\:syncDnsRecords\(\) expects App\\Models\\CloudflareZone, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/SyncCloudflareCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cpu_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncDockerCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncDockerCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$memory_usage_mb\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncDockerCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncDockerCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncDockerCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$comment\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$modified_on\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$priority\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$proxiable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$proxied\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$ttl\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/CloudflareController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/ServiceController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Middleware/SetActiveWorkspace.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$context\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$is_read\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$resolved_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$severity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\AlertResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/AlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$cpu_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$memory_limit_mb\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$memory_usage_mb\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$ports\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ContainerResource\:\:\$synced_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ContainerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$cpu_usage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$disk_total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$disk_usage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$load_average\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$memory_total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$memory_usage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\MetricResource\:\:\$recorded_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/MetricResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$hostname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$ip_address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$last_polled_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$last_seen_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$metrics\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$os\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\ServerResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/ServerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\UserResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\UserResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\UserResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\UserResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/UserResource.php
+
+		-
+			message: '#^Parameter \#2 \$user of method App\\Services\\AlertService\:\:create\(\) expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: app/Jobs/PollServerMetricsJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/SyncCloudflareZonesJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$container_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notify_on_down\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$state\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Services\\NotificationService\:\:dispatch\(\) expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Parameter \#2 \$user of method App\\Services\\AlertService\:\:create\(\) expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/SyncDockerContainersJob.php
+
+		-
+			message: '#^Match arm comparison between ''password'' and ''password'' is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: app/Models/Server.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Team.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$api_token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CloudflareService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/CloudflareService.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/DockerService.php
+
+		-
+			message: '#^Method App\\Services\\MetricService\:\:getLatest\(\) should return App\\Models\\Metric\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MetricService.php
+
+		-
+			message: '#^Method App\\Services\\MetricService\:\:record\(\) should return App\\Models\\Metric but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MetricService.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MetricService.php
+
+		-
+			message: '#^Parameter \#1 \$channel of method App\\Contracts\\NotificationDriverContract\:\:send\(\) expects App\\Models\\NotificationChannel, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Parameter \#1 \$channel of method App\\Services\\NotificationService\:\:resolveDriver\(\) expects App\\Models\\NotificationChannel, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/NotificationService.php
+
+		-
+			message: '#^Match arm comparison between ''password'' and ''password'' is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: app/Services/SSHService.php
+
+		-
+			message: '#^Method App\\Services\\ServerService\:\:create\(\) should return App\\Models\\Server but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/ServerService.php

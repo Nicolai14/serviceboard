@@ -73,11 +73,37 @@ jobs:
         run: find app config routes database -name "*.php" | xargs php -l | grep -v "No syntax errors" | grep "." && exit 1 || exit 0
 
   # -----------------------------------------------------------------------
-  # 4) Deploy (nur main-Branch nach Push)
+  # 4) Static Analysis (Larastan)
+  # -----------------------------------------------------------------------
+  static-analysis:
+    name: Static Analysis (Larastan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3, openssl, bcmath, ctype, json
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress
+
+      - run: composer analyse
+
+  # -----------------------------------------------------------------------
+  # 5) Deploy (nur main-Branch nach Push)
   # -----------------------------------------------------------------------
   deploy:
     name: Deploy to Hetzner
-    needs: [test, build-assets, lint]
+    needs: [test, build-assets, lint, static-analysis]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 

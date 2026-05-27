@@ -1,0 +1,17 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    # Existing findings are frozen here so CI only fails on *new* issues.
+    # Burn this down over time (regenerate with --generate-baseline).
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - app
+
+    # Treat string keys returned by config()/env() etc. as known where Larastan
+    # can infer them; keep noise low without hiding real type errors.
+    checkModelProperties: true
+
+    ignoreErrors: []
