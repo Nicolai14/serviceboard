@@ -264,6 +264,66 @@
                 <p class="text-sm text-zinc-300">{{ $server->last_seen_at?->diffForHumans() ?? '—' }}</p>
             </div>
         </div>
+
+        {{-- Usage history (24h) --}}
+        @php
+            $histLabels = $chartData['labels'] ?? [];
+            $histCount  = count($histLabels);
+            $series = [
+                ['key' => 'cpu',    'label' => 'CPU',  'color' => '#60a5fa'],
+                ['key' => 'memory', 'label' => 'RAM',  'color' => '#c084fc'],
+                ['key' => 'disk',   'label' => 'Disk', 'color' => '#fb923c'],
+            ];
+            $pointsFor = function (array $data) use ($histCount) {
+                $pts = [];
+                foreach ($data as $i => $v) {
+                    $x = $histCount > 1 ? round($i / ($histCount - 1) * 100, 2) : 0;
+                    $y = round(100 - max(0, min(100, (float) $v)), 2);
+                    $pts[] = "{$x},{$y}";
+                }
+                return implode(' ', $pts);
+            };
+        @endphp
+        <div class="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
+                <h2 class="text-sm font-semibold text-zinc-100">Auslastung (24 h)</h2>
+                <div class="flex items-center gap-4">
+                    @foreach ($series as $s)
+                        <span class="flex items-center gap-1.5 text-xs text-zinc-400">
+                            <span class="h-2 w-2 rounded-full" style="background: {{ $s['color'] }}"></span>{{ $s['label'] }}
+                        </span>
+                    @endforeach
+                </div>
+            </div>
+            @if ($histCount < 2)
+                <div class="py-10 text-center">
+                    <p class="text-sm text-zinc-600">Noch nicht genug Verlaufsdaten der letzten 24 h</p>
+                </div>
+            @else
+                <div class="px-5 py-4">
+                    <div class="relative h-48">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 flex flex-col justify-between text-[10px] text-zinc-600">
+                            <span>100</span><span>50</span><span>0</span>
+                        </div>
+                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
+                            @foreach ([25, 50, 75] as $gy)
+                                <line x1="0" y1="{{ $gy }}" x2="100" y2="{{ $gy }}" stroke="#27272a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                            @endforeach
+                            @foreach ($series as $s)
+                                <polyline fill="none" stroke="{{ $s['color'] }}" stroke-width="1.5"
+                                          stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"
+                                          points="{{ $pointsFor($chartData[$s['key']]) }}"/>
+                            @endforeach
+                        </svg>
+                    </div>
+                    <div class="mt-2 flex justify-between text-[10px] text-zinc-600">
+                        <span>{{ $histLabels[0] ?? '' }}</span>
+                        <span>{{ $histLabels[intdiv($histCount, 2)] ?? '' }}</span>
+                        <span>{{ $histLabels[$histCount - 1] ?? '' }}</span>
+                    </div>
+                </div>
+            @endif
+        </div>
     @else
         <div class="mb-6 rounded-xl border border-dashed border-zinc-800 p-8 text-center">
             <p class="text-sm text-zinc-600">Noch keine Metriken — klicke auf <strong class="text-zinc-400">„Metriken jetzt abrufen"</strong> um die erste Messung zu starten.</p>

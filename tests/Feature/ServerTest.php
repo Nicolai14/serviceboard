@@ -66,6 +66,30 @@ class ServerTest extends TestCase
         $this->actingAs($user)->get("/servers/{$server->id}")->assertStatus(200);
     }
 
+    public function test_server_show_renders_usage_chart_with_history(): void
+    {
+        $user   = User::factory()->create();
+        $server = Server::factory()->create(['user_id' => $user->id]);
+
+        foreach ([2, 1] as $hoursAgo) {
+            $server->metrics()->create([
+                'cpu_usage'      => 40,
+                'memory_usage'   => 500,
+                'memory_total'   => 1000,
+                'disk_usage'     => 30,
+                'disk_total'     => 100,
+                'load_average'   => 0.5,
+                'uptime_seconds' => 1000,
+                'recorded_at'    => now()->subHours($hoursAgo),
+            ]);
+        }
+
+        $this->actingAs($user)
+            ->get("/servers/{$server->id}")
+            ->assertOk()
+            ->assertSee('Auslastung (24 h)');
+    }
+
     public function test_user_cannot_view_another_users_server(): void
     {
         $user    = User::factory()->create();
