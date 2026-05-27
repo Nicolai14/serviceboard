@@ -147,5 +147,52 @@
                 </div>
             </form>
         </div>
+
+        {{-- Alert thresholds --}}
+        @php $t = $server->thresholds(); @endphp
+        <div class="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <h2 class="text-base font-semibold text-zinc-100 mb-1">Alert-Schwellwerte</h2>
+            <p class="text-xs text-zinc-500 mb-6">Ab wann ein Alert ausgelöst wird (% Auslastung).</p>
+
+            <form method="POST" action="{{ route('servers.alert-settings', $server) }}" class="space-y-6">
+                @csrf
+                @method('PATCH')
+
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" name="alerts_enabled" value="1" @checked(old('alerts_enabled', $server->alerts_enabled))
+                           class="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-blue-600 focus:ring-blue-500">
+                    <span class="text-sm text-zinc-300">Alerts für diesen Server aktiv</span>
+                </label>
+
+                <div class="space-y-4">
+                    @foreach ([['cpu', 'CPU'], ['memory', 'RAM'], ['disk', 'Disk']] as [$key, $label])
+                        <div class="grid grid-cols-3 items-center gap-4">
+                            <span class="text-sm font-medium text-zinc-400">{{ $label }}</span>
+                            <div>
+                                <label for="{{ $key }}_warning" class="block text-xs text-zinc-500 mb-1">Warnung</label>
+                                <input type="number" id="{{ $key }}_warning" name="thresholds[{{ $key }}_warning]" min="1" max="100" required
+                                       value="{{ old('thresholds.' . $key . '_warning', $t[$key . '_warning']) }}"
+                                       class="w-full rounded-lg border px-3 py-2 text-sm bg-zinc-800 border-zinc-700 text-zinc-100 font-mono
+                                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="{{ $key }}_critical" class="block text-xs text-zinc-500 mb-1">Kritisch</label>
+                                <input type="number" id="{{ $key }}_critical" name="thresholds[{{ $key }}_critical]" min="1" max="100" required
+                                       value="{{ old('thresholds.' . $key . '_critical', $t[$key . '_critical']) }}"
+                                       class="w-full rounded-lg border px-3 py-2 text-sm bg-zinc-800 border-zinc-700 text-zinc-100 font-mono
+                                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="flex items-center gap-3 pt-2 border-t border-zinc-800">
+                    <button type="submit"
+                            class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+                        Schwellwerte speichern
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </x-layouts.app>

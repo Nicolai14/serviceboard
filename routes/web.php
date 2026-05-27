@@ -55,6 +55,7 @@ Route::middleware(['auth', 'workspace'])->group(function () {
         Route::post('check-online',[ServerController::class, 'checkOnline'])->name('check-online');
         Route::post('test-ssh',    [ServerController::class, 'testSsh'])->name('test-ssh');
         Route::post('poll-now',    [ServerController::class, 'pollNow'])->name('poll-now');
+        Route::patch('alert-settings', [ServerController::class, 'updateAlertSettings'])->name('alert-settings');
 
         // Docker sub-resource
         Route::prefix('docker')->name('docker.')->group(function () {

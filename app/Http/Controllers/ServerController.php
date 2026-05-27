@@ -73,6 +73,29 @@ class ServerController extends Controller
         return redirect()->route('servers.show', $server)->with('success', 'Server wurde aktualisiert.');
     }
 
+    public function updateAlertSettings(Request $request, Server $server): RedirectResponse
+    {
+        $this->authorize('update', $server);
+
+        $validated = $request->validate([
+            'alerts_enabled'             => ['nullable', 'boolean'],
+            'thresholds'                 => ['required', 'array'],
+            'thresholds.cpu_warning'     => ['required', 'integer', 'min:1', 'max:100'],
+            'thresholds.cpu_critical'    => ['required', 'integer', 'min:1', 'max:100'],
+            'thresholds.memory_warning'  => ['required', 'integer', 'min:1', 'max:100'],
+            'thresholds.memory_critical' => ['required', 'integer', 'min:1', 'max:100'],
+            'thresholds.disk_warning'    => ['required', 'integer', 'min:1', 'max:100'],
+            'thresholds.disk_critical'   => ['required', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $server->update([
+            'alerts_enabled'   => $request->boolean('alerts_enabled'),
+            'alert_thresholds' => $validated['thresholds'],
+        ]);
+
+        return redirect()->route('servers.edit', $server)->with('success', 'Alert-Einstellungen gespeichert.');
+    }
+
     public function destroy(Server $server): RedirectResponse
     {
         $this->authorize('delete', $server);

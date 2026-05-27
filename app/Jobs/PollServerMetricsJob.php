@@ -66,46 +66,42 @@ class PollServerMetricsJob implements ShouldQueue
 
     private function checkThresholds(Server $server, User $owner, Metric $metric, AlertService $alertService): void
     {
-        if ($metric->cpu_usage > 90) {
-            $alertService->create(
-                $server,
-                $owner,
-                'high_cpu',
-                'critical',
-                "Kritische CPU-Auslastung: {$metric->cpu_usage}%",
-                ['cpu' => $metric->cpu_usage]
-            );
-        } elseif ($metric->cpu_usage > 75) {
-            $alertService->create(
-                $server,
-                $owner,
-                'high_cpu',
-                'warning',
-                "Hohe CPU-Auslastung: {$metric->cpu_usage}%",
-                ['cpu' => $metric->cpu_usage]
-            );
+        if (! $server->alerts_enabled) {
+            return;
         }
 
-        if ($metric->memory_percent > 90) {
-            $alertService->create(
-                $server,
-                $owner,
-                'high_memory',
-                'critical',
-                "Kritische RAM-Auslastung: {$metric->memory_percent}%",
-                ['memory_percent' => $metric->memory_percent]
-            );
-        }
+        $t = $server->thresholds();
 
-        if ($metric->disk_percent > 85) {
-            $alertService->create(
-                $server,
-                $owner,
-                'high_disk',
-                'warning',
-                "Hohe Disk-Auslastung: {$metric->disk_percent}%",
-                ['disk_percent' => $metric->disk_percent]
-            );
+        $this->evaluate($alertService, $server, $owner, 'high_cpu', 'CPU-Auslastung',
+            (float) $metric->cpu_usage, $t['cpu_warning'], $t['cpu_critical'], ['cpu' => $metric->cpu_usage]);
+
+        $this->evaluate($alertService, $server, $owner, 'high_memory', 'RAM-Auslastung',
+            (float) $metric->memory_percent, $t['memory_warning'], $t['memory_critical'], ['memory_percent' => $metric->memory_percent]);
+
+        $this->evaluate($alertService, $server, $owner, 'high_disk', 'Disk-Auslastung',
+            (float) $metric->disk_percent, $t['disk_warning'], $t['disk_critical'], ['disk_percent' => $metric->disk_percent]);
+    }
+
+    /**
+     * Raise a critical/warning alert when a metric reaches its configured level.
+     *
+     * @param array<string, mixed> $context
+     */
+    private function evaluate(
+        AlertService $alertService,
+        Server $server,
+        User $owner,
+        string $type,
+        string $label,
+        float $value,
+        int $warning,
+        int $critical,
+        array $context,
+    ): void {
+        if ($value >= $critical) {
+            $alertService->create($server, $owner, $type, 'critical', "Kritische {$label}: " . round($value, 1) . '%', $context);
+        } elseif ($value >= $warning) {
+            $alertService->create($server, $owner, $type, 'warning', "Hohe {$label}: " . round($value, 1) . '%', $context);
         }
     }
 }

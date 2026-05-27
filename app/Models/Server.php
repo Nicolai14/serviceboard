@@ -30,6 +30,8 @@ class Server extends Model
         'last_seen_at',
         'last_polled_at',
         'poll_failures',
+        'alerts_enabled',
+        'alert_thresholds',
     ];
 
     protected $casts = [
@@ -40,7 +42,33 @@ class Server extends Model
         'last_polled_at' => 'datetime',
         'ssh_private_key' => 'encrypted',
         'ssh_password'    => 'encrypted',
+        'alerts_enabled'  => 'boolean',
+        'alert_thresholds' => 'array',
     ];
+
+    /**
+     * Default alert thresholds (percent) used when a server has no overrides.
+     *
+     * @var array<string, int>
+     */
+    public const DEFAULT_THRESHOLDS = [
+        'cpu_warning'     => 75,
+        'cpu_critical'    => 90,
+        'memory_warning'  => 80,
+        'memory_critical' => 90,
+        'disk_warning'    => 85,
+        'disk_critical'   => 95,
+    ];
+
+    /**
+     * Effective alert thresholds: stored overrides merged over the defaults.
+     *
+     * @return array<string, int>
+     */
+    public function thresholds(): array
+    {
+        return array_merge(self::DEFAULT_THRESHOLDS, $this->alert_thresholds ?? []);
+    }
 
     protected $hidden = [
         'ssh_private_key',
