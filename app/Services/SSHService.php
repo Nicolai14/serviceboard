@@ -136,7 +136,6 @@ SH;
         $authenticated = match ($server->ssh_auth_method) {
             'key'      => $this->loginWithKey($ssh, $server),
             'password' => $ssh->login($server->ssh_user, $server->ssh_password ?? ''),
-            default    => throw SSHException::noCredentials($server->hostname),
         };
 
         if (!$authenticated) {

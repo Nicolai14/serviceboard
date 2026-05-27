@@ -5,6 +5,9 @@ namespace App\Http\Resources\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\DockerContainer
+ */
 class ContainerResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -14,7 +17,7 @@ class ContainerResource extends JsonResource
             'name'        => $this->name,
             'image'       => $this->image,
             'state'       => $this->state,
-            'status'      => $this->status,
+            'status'      => $this->status_text,
             'cpu_percent' => $this->cpu_percent,
             'mem_usage'   => $this->memory_usage_mb,
             'mem_limit'   => $this->memory_limit_mb,

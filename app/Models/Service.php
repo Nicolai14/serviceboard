@@ -26,6 +26,7 @@ class Service extends Model
         'check_interval' => 'integer',
     ];
 
+    /** @return BelongsTo<Server, $this> */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);

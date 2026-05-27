@@ -42,21 +42,25 @@ class User extends Authenticatable
         return $query->where('dashboard_public', true);
     }
 
+    /** @return HasMany<Server, $this> */
     public function servers(): HasMany
     {
         return $this->hasMany(Server::class);
     }
 
+    /** @return HasMany<Alert, $this> */
     public function alerts(): HasMany
     {
         return $this->hasMany(Alert::class);
     }
 
+    /** @return HasMany<Team, $this> */
     public function ownedTeams(): HasMany
     {
         return $this->hasMany(Team::class, 'owner_id');
     }
 
+    /** @return BelongsToMany<Team, $this> */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_members')
@@ -64,11 +68,13 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    /** @return HasMany<NotificationChannel, $this> */
     public function notificationChannels(): HasMany
     {
         return $this->hasMany(NotificationChannel::class);
     }
 
+    /** @return HasMany<Workspace, $this> */
     public function workspaces(): HasMany
     {
         return $this->hasMany(Workspace::class);

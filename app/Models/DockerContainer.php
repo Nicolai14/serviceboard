@@ -36,6 +36,7 @@ class DockerContainer extends Model
         'notify_on_down'   => 'boolean',
     ];
 
+    /** @return BelongsTo<Server, $this> */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);

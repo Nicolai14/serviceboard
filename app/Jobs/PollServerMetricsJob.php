@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Exceptions\SSHException;
+use App\Models\Metric;
 use App\Models\Server;
+use App\Models\User;
 use App\Services\AlertService;
 use App\Services\ServerService;
 use Illuminate\Bus\Queueable;
@@ -31,13 +33,15 @@ class PollServerMetricsJob implements ShouldQueue
             return;
         }
 
+        $owner = $server->user;
+
         try {
             $serverService->pollMetrics($server);
 
             // Trigger a high-CPU/RAM alert if thresholds are breached.
             $latest = $server->metrics()->latest('recorded_at')->first();
             if ($latest) {
-                $this->checkThresholds($server, $latest, $alertService);
+                $this->checkThresholds($server, $owner, $latest, $alertService);
             }
         } catch (SSHException $e) {
             $server->incrementPollFailures();
@@ -45,7 +49,7 @@ class PollServerMetricsJob implements ShouldQueue
             if ($server->poll_failures >= 3) {
                 $alertService->create(
                     $server,
-                    $server->user,
+                    $owner,
                     'ssh_failure',
                     'warning',
                     "SSH-Verbindung fehlgeschlagen: {$e->getMessage()}"
@@ -60,12 +64,12 @@ class PollServerMetricsJob implements ShouldQueue
         $server?->incrementPollFailures();
     }
 
-    private function checkThresholds(Server $server, $metric, AlertService $alertService): void
+    private function checkThresholds(Server $server, User $owner, Metric $metric, AlertService $alertService): void
     {
         if ($metric->cpu_usage > 90) {
             $alertService->create(
                 $server,
-                $server->user,
+                $owner,
                 'high_cpu',
                 'critical',
                 "Kritische CPU-Auslastung: {$metric->cpu_usage}%",
@@ -74,7 +78,7 @@ class PollServerMetricsJob implements ShouldQueue
         } elseif ($metric->cpu_usage > 75) {
             $alertService->create(
                 $server,
-                $server->user,
+                $owner,
                 'high_cpu',
                 'warning',
                 "Hohe CPU-Auslastung: {$metric->cpu_usage}%",
@@ -85,7 +89,7 @@ class PollServerMetricsJob implements ShouldQueue
         if ($metric->memory_percent > 90) {
             $alertService->create(
                 $server,
-                $server->user,
+                $owner,
                 'high_memory',
                 'critical',
                 "Kritische RAM-Auslastung: {$metric->memory_percent}%",
@@ -96,7 +100,7 @@ class PollServerMetricsJob implements ShouldQueue
         if ($metric->disk_percent > 85) {
             $alertService->create(
                 $server,
-                $server->user,
+                $owner,
                 'high_disk',
                 'warning',
                 "Hohe Disk-Auslastung: {$metric->disk_percent}%",

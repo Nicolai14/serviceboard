@@ -19,6 +19,7 @@ class NotificationChannel extends Model
         'last_tested_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

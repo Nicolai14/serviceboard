@@ -47,41 +47,49 @@ class Server extends Model
         'ssh_password',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Team, $this> */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /** @return BelongsTo<Workspace, $this> */
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
     }
 
+    /** @return HasMany<Deployment, $this> */
     public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
     }
 
+    /** @return HasMany<Service, $this> */
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
     }
 
+    /** @return HasMany<Metric, $this> */
     public function metrics(): HasMany
     {
         return $this->hasMany(Metric::class);
     }
 
+    /** @return HasMany<Alert, $this> */
     public function alerts(): HasMany
     {
         return $this->hasMany(Alert::class);
     }
 
+    /** @return HasMany<DockerContainer, $this> */
     public function dockerContainers(): HasMany
     {
         return $this->hasMany(DockerContainer::class);
@@ -97,7 +105,6 @@ class Server extends Model
         return match ($this->ssh_auth_method) {
             'key'      => filled($this->ssh_private_key),
             'password' => filled($this->ssh_password),
-            default    => false,
         };
     }
 

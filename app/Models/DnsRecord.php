@@ -34,6 +34,7 @@ class DnsRecord extends Model
         'synced_at'   => 'datetime',
     ];
 
+    /** @return BelongsTo<CloudflareZone, $this> */
     public function zone(): BelongsTo
     {
         return $this->belongsTo(CloudflareZone::class, 'cloudflare_zone_id');

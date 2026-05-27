@@ -8,6 +8,9 @@ use Illuminate\Support\Collection;
 
 class MetricService
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     public function record(Server $server, array $data): Metric
     {
         return $server->metrics()->create([

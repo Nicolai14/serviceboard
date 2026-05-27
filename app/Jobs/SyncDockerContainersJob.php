@@ -50,6 +50,8 @@ class SyncDockerContainersJob implements ShouldQueue
 
     private function checkForStoppedContainers(Server $server, AlertService $alertService, NotificationService $notificationService): void
     {
+        $owner = $server->user;
+
         $stopped = $server->dockerContainers()
             ->where('state', '!=', 'running')
             ->where('state', '!=', 'created')
@@ -66,7 +68,7 @@ class SyncDockerContainersJob implements ShouldQueue
             if (!$existingAlert) {
                 $alertService->create(
                     $server,
-                    $server->user,
+                    $owner,
                     'container_down',
                     'warning',
                     "Container \"{$container->name}\" ist nicht mehr aktiv ({$container->state})",
@@ -75,7 +77,7 @@ class SyncDockerContainersJob implements ShouldQueue
 
                 if ($container->notify_on_down) {
                     $notificationService->dispatch(
-                        $server->user,
+                        $owner,
                         "🚨 Container down: {$container->name}",
                         "Server: *{$server->name}*\nContainer: `{$container->name}`\nStatus: {$container->state}\nImage: {$container->image}"
                     );

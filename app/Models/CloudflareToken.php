@@ -29,11 +29,13 @@ class CloudflareToken extends Model
 
     protected $hidden = ['api_token'];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return HasMany<CloudflareZone, $this> */
     public function zones(): HasMany
     {
         return $this->hasMany(CloudflareZone::class);

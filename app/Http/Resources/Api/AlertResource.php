@@ -5,6 +5,9 @@ namespace App\Http\Resources\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Alert
+ */
 class AlertResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -17,7 +20,7 @@ class AlertResource extends JsonResource
             'context'    => $this->context,
             'is_read'    => (bool) $this->is_read,
             'resolved_at'=> $this->resolved_at?->toISOString(),
-            'created_at' => $this->created_at->toISOString(),
+            'created_at' => $this->created_at?->toISOString(),
         ];
     }
 }

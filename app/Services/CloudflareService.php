@@ -39,7 +39,7 @@ class CloudflareService
             $res = $this->client($rawToken)->get('/user/tokens/verify');
             $body = $res->json();
 
-            if (!$body['success'] ?? false) {
+            if (! ($body['success'] ?? false)) {
                 $msg = $body['errors'][0]['message'] ?? 'Token ungültig';
                 return ['valid' => false, 'account_id' => null, 'account_name' => null, 'message' => $msg];
             }

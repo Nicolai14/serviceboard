@@ -165,7 +165,7 @@ SH;
     private function parseMemoryValue(string $mem): float
     {
         $parts = explode(' / ', $mem);
-        return $this->convertToMb(trim($parts[0] ?? '0'));
+        return $this->convertToMb(trim($parts[0]));
     }
 
     /**

@@ -16,11 +16,13 @@ class Team extends Model
         'settings' => 'array',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    /** @return BelongsToMany<User, $this> */
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'team_members')
@@ -28,11 +30,13 @@ class Team extends Model
             ->withTimestamps();
     }
 
+    /** @return HasMany<TeamMember, $this> */
     public function teamMembers(): HasMany
     {
         return $this->hasMany(TeamMember::class);
     }
 
+    /** @return HasMany<Server, $this> */
     public function servers(): HasMany
     {
         return $this->hasMany(Server::class);

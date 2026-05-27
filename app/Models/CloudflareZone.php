@@ -32,16 +32,19 @@ class CloudflareZone extends Model
         'synced_at'              => 'datetime',
     ];
 
+    /** @return BelongsTo<CloudflareToken, $this> */
     public function cloudflareToken(): BelongsTo
     {
         return $this->belongsTo(CloudflareToken::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return HasMany<DnsRecord, $this> */
     public function dnsRecords(): HasMany
     {
         return $this->hasMany(DnsRecord::class);

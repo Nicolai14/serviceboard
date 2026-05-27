@@ -5,6 +5,9 @@ namespace App\Http\Resources\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Server
+ */
 class ServerResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -25,7 +28,7 @@ class ServerResource extends JsonResource
                 $metric = $this->metrics->first();
                 return $metric ? new MetricResource($metric) : null;
             }),
-            'created_at'  => $this->created_at->toISOString(),
+            'created_at'  => $this->created_at?->toISOString(),
         ];
     }
 }
