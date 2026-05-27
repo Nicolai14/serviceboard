@@ -8,6 +8,7 @@ use App\Models\Server;
 use App\Policies\AlertPolicy;
 use App\Policies\ServerPolicy;
 use App\Services\DeploymentService;
+use App\Services\Deployments\SshDeploymentDriver;
 use App\Services\NotificationService;
 use App\Services\Notifications\EmailDriver;
 use App\Services\Notifications\TelegramDriver;
@@ -29,7 +30,12 @@ class AppServiceProvider extends ServiceProvider
             return $service;
         });
 
-        $this->app->singleton(DeploymentService::class);
+        $this->app->singleton(DeploymentService::class, function ($app) {
+            $service = new DeploymentService();
+            $service->registerDriver($app->make(SshDeploymentDriver::class));
+
+            return $service;
+        });
     }
 
     public function boot(): void

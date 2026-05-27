@@ -109,6 +109,22 @@ SH;
     }
 
     /**
+     * Run a command and return both combined output and the shell exit code.
+     *
+     * @return array{output: string, exit_code: int}
+     */
+    public function runScript(Server $server, string $command): array
+    {
+        $ssh    = $this->connect($server);
+        $output = (string) $ssh->exec($command);
+
+        return [
+            'output'    => $output,
+            'exit_code' => $ssh->getExitStatus() ?: 0,
+        ];
+    }
+
+    /**
      * SSH connect, run metrics script, parse and return data array.
      *
      * @return array{cpu_usage: float, memory_usage: float, memory_total: float,

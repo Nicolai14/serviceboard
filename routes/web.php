@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CloudflareController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DockerController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\ServiceController;
@@ -70,6 +71,17 @@ Route::middleware(['auth', 'workspace'])->group(function () {
             Route::post('/',           [ServiceController::class, 'store'])->name('store');
             Route::patch('/{service}', [ServiceController::class, 'update'])->name('update');
             Route::delete('/{service}',[ServiceController::class, 'destroy'])->name('destroy');
+        });
+
+        // Deployments
+        Route::prefix('deployments')->name('deployments.')->group(function () {
+            Route::get('/',                          [DeploymentController::class, 'index'])->name('index');
+            Route::get('/create',                    [DeploymentController::class, 'create'])->name('create');
+            Route::post('/',                         [DeploymentController::class, 'store'])->name('store');
+            Route::get('/{deployment}',              [DeploymentController::class, 'show'])->name('show');
+            Route::get('/{deployment}/status-json',  [DeploymentController::class, 'statusJson'])->name('status-json');
+            Route::post('/{deployment}/retry',       [DeploymentController::class, 'retry'])->name('retry');
+            Route::delete('/{deployment}',           [DeploymentController::class, 'destroy'])->name('destroy');
         });
     });
 
