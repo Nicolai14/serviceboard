@@ -17,5 +17,8 @@ Schedule::command('servers:metrics --queue')->everyMinute()->withoutOverlapping(
 // Every 2 minutes: SSH → docker ps + docker stats
 Schedule::command('servers:docker --queue')->everyTwoMinutes()->withoutOverlapping();
 
+// Every minute: HTTP/TCP health checks for configured services (honours per-service interval)
+Schedule::command('services:check --queue')->everyMinute()->withoutOverlapping();
+
 // Every 15 minutes: Cloudflare API → zones + DNS records
 Schedule::command('cloudflare:sync --queue')->everyFifteenMinutes()->withoutOverlapping();

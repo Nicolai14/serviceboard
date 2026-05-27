@@ -37,7 +37,9 @@ class ServiceController extends Controller
             'check_url'      => ['nullable', 'url', 'max:255'],
             'check_interval' => ['nullable', 'integer', 'min:10', 'max:3600'],
             'notes'          => ['nullable', 'string', 'max:1000'],
+            'notify_on_down' => ['nullable', 'boolean'],
         ]);
+        $validated['notify_on_down'] = $request->boolean('notify_on_down');
 
         $server->services()->create($validated);
 
@@ -55,7 +57,9 @@ class ServiceController extends Controller
             'check_url'      => ['nullable', 'url', 'max:255'],
             'check_interval' => ['nullable', 'integer', 'min:10', 'max:3600'],
             'notes'          => ['nullable', 'string', 'max:1000'],
+            'notify_on_down' => ['nullable', 'boolean'],
         ]);
+        $validated['notify_on_down'] = $request->boolean('notify_on_down');
 
         $service->update($validated);
 

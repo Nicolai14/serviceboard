@@ -34,6 +34,11 @@
                                         {{ ucfirst($service->type) }}@if ($service->port) · Port {{ $service->port }}@endif
                                         @if ($service->check_url) · <span class="font-mono">{{ $service->check_url }}</span>@endif
                                     </p>
+                                    @if ($service->last_checked_at)
+                                        <p class="text-xs text-zinc-600 mt-0.5">
+                                            Geprüft {{ $service->last_checked_at->diffForHumans() }}{{ $service->last_latency_ms !== null ? ' · ' . $service->last_latency_ms . ' ms' : '' }}
+                                        </p>
+                                    @endif
                                 </div>
                                 <span class="text-xs px-2 py-0.5 rounded-full
                                     {{ $service->status === 'running' ? 'bg-green-900/40 text-green-400' : ($service->status === 'error' ? 'bg-red-900/40 text-red-400' : 'bg-zinc-800 text-zinc-400') }}">
@@ -87,6 +92,11 @@
                                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 </div>
                                 <input type="hidden" name="check_interval" value="{{ $service->check_interval }}">
+                                <label class="col-span-2 sm:col-span-4 flex items-center gap-2.5 cursor-pointer">
+                                    <input type="checkbox" name="notify_on_down" value="1" @checked($service->notify_on_down)
+                                           class="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-blue-600 focus:ring-blue-500">
+                                    <span class="text-sm text-zinc-300">Bei Ausfall benachrichtigen</span>
+                                </label>
                                 <div class="col-span-2 sm:col-span-4 flex items-center gap-2">
                                     <button type="submit"
                                             class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
