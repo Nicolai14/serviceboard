@@ -52,12 +52,12 @@ class Server extends Model
      * @var array<string, int>
      */
     public const DEFAULT_THRESHOLDS = [
-        'cpu_warning'     => 75,
+        'cpu_warning'     => 80,
         'cpu_critical'    => 90,
         'memory_warning'  => 80,
         'memory_critical' => 90,
-        'disk_warning'    => 85,
-        'disk_critical'   => 95,
+        'disk_warning'    => 80,
+        'disk_critical'   => 90,
     ];
 
     /**

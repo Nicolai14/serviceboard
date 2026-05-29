@@ -3,12 +3,16 @@
 namespace Tests\Feature;
 
 use App\Jobs\PollServerMetricsJob;
+use App\Models\Alert;
+use App\Models\NotificationChannel;
 use App\Models\Server;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\AlertService;
+use App\Services\NotificationService;
 use App\Services\ServerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Mockery;
 use Tests\TestCase;
 
@@ -40,7 +44,11 @@ class AlertThresholdTest extends TestCase
         $serverService = Mockery::mock(ServerService::class);
         $serverService->shouldReceive('pollMetrics')->once();
 
-        (new PollServerMetricsJob($server->id))->handle($serverService, app(AlertService::class));
+        (new PollServerMetricsJob($server->id))->handle(
+            $serverService,
+            app(AlertService::class),
+            app(NotificationService::class),
+        );
     }
 
     public function test_thresholds_merge_defaults_with_overrides(): void
@@ -107,6 +115,74 @@ class AlertThresholdTest extends TestCase
             ->get("/servers/{$server->id}/edit")
             ->assertOk()
             ->assertSee('Alert-Schwellwerte');
+    }
+
+    public function test_threshold_breach_dispatches_telegram_notification(): void
+    {
+        config(['serverflow.telegram.bot_token' => 'test-token']);
+        Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
+
+        $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);
+        NotificationChannel::create([
+            'user_id'   => $server->user_id,
+            'name'      => 'Telegram',
+            'type'      => 'telegram',
+            'config'    => ['chat_id' => '999'],
+            'is_active' => true,
+        ]);
+
+        $this->runPoll($server);
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), 'sendMessage')
+                && str_contains((string) $request['text'], 'CPU-Auslastung');
+        });
+    }
+
+    public function test_threshold_breach_does_not_resend_while_alert_open(): void
+    {
+        config(['serverflow.telegram.bot_token' => 'test-token']);
+        Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
+
+        $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);
+        NotificationChannel::create([
+            'user_id'   => $server->user_id,
+            'name'      => 'Telegram',
+            'type'      => 'telegram',
+            'config'    => ['chat_id' => '999'],
+            'is_active' => true,
+        ]);
+
+        $this->runPoll($server);
+        Http::assertSentCount(1);
+
+        $this->runPoll($server);
+        Http::assertSentCount(1);
+
+        $this->assertSame(1, Alert::where('server_id', $server->id)->where('type', 'high_cpu')->count());
+    }
+
+    public function test_threshold_breach_after_resolve_sends_again(): void
+    {
+        config(['serverflow.telegram.bot_token' => 'test-token']);
+        Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
+
+        $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);
+        NotificationChannel::create([
+            'user_id'   => $server->user_id,
+            'name'      => 'Telegram',
+            'type'      => 'telegram',
+            'config'    => ['chat_id' => '999'],
+            'is_active' => true,
+        ]);
+
+        $this->runPoll($server);
+        Alert::where('server_id', $server->id)->update(['resolved_at' => now()]);
+
+        $this->runPoll($server);
+
+        Http::assertSentCount(2);
+        $this->assertSame(2, Alert::where('server_id', $server->id)->where('type', 'high_cpu')->count());
     }
 
     public function test_owner_can_update_alert_settings(): void
