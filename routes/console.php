@@ -22,3 +22,6 @@ Schedule::command('services:check --queue')->everyMinute()->withoutOverlapping()
 
 // Every 15 minutes: Cloudflare API → zones + DNS records
 Schedule::command('cloudflare:sync --queue')->everyFifteenMinutes()->withoutOverlapping();
+
+// Daily 12:00 Berlin: Telegram usage snapshot per user
+Schedule::command('telegram:daily-report')->dailyAt('12:00')->timezone('Europe/Berlin');

@@ -26,6 +26,23 @@ class TelegramService
         return $response->successful() && $response->json('ok') === true;
     }
 
+    public function sendPhoto(string $chatId, string $photoUrl, ?string $caption = null, string $parseMode = 'Markdown'): bool
+    {
+        $payload = [
+            'chat_id' => $chatId,
+            'photo'   => $photoUrl,
+        ];
+
+        if ($caption !== null) {
+            $payload['caption']    = $caption;
+            $payload['parse_mode'] = $parseMode;
+        }
+
+        $response = $this->client()->post('sendPhoto', $payload);
+
+        return $response->successful() && $response->json('ok') === true;
+    }
+
     public function testConnection(string $chatId): array
     {
         try {
