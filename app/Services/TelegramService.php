@@ -39,4 +39,37 @@ class TelegramService
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    public function setWebhook(string $url, ?string $secretToken = null): array
+    {
+        $payload = ['url' => $url];
+
+        if ($secretToken !== null) {
+            $payload['secret_token'] = $secretToken;
+        }
+
+        $response = $this->client()->post('setWebhook', $payload);
+
+        return [
+            'success' => $response->successful() && $response->json('ok') === true,
+            'body'    => $response->json(),
+        ];
+    }
+
+    public function deleteWebhook(): array
+    {
+        $response = $this->client()->post('deleteWebhook');
+
+        return [
+            'success' => $response->successful() && $response->json('ok') === true,
+            'body'    => $response->json(),
+        ];
+    }
+
+    public function getWebhookInfo(): array
+    {
+        $response = $this->client()->get('getWebhookInfo');
+
+        return $response->json() ?? [];
+    }
 }

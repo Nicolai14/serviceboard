@@ -4,7 +4,11 @@ use App\Http\Controllers\Api\V1\AlertController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContainerController;
 use App\Http\Controllers\Api\V1\ServerController;
+use App\Http\Controllers\TelegramWebhookController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/telegram/webhook/{secret}', TelegramWebhookController::class)
+    ->name('telegram.webhook');
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
 
