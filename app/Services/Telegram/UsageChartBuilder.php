@@ -55,7 +55,7 @@ class UsageChartBuilder
                 'title'  => ['display' => true, 'text' => 'Auslastung pro Server'],
                 'scales' => [
                     'yAxes' => [[
-                        'ticks' => ['beginAtZero' => true, 'max' => 100, 'callback' => null],
+                        'ticks' => ['beginAtZero' => true, 'max' => 100],
                     ]],
                 ],
             ],
