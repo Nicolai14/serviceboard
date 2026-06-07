@@ -3,6 +3,7 @@
          @pointermove.window="onMove($event)"
          @pointerup.window="onUp()"
          @keydown.window="onKey($event)"
+         @resize.window="measure()"
          class="flex flex-col h-[calc(100vh-7rem)]">
 
         {{-- ------------------------------------------------------------- --}}
@@ -58,7 +59,7 @@
         <div class="flex flex-1 min-h-0 gap-4">
 
             {{-- Canvas --}}
-            <div class="relative flex-1 overflow-auto rounded-xl border border-zinc-800 bg-zinc-950">
+            <div x-ref="scroll" class="relative flex-1 overflow-auto rounded-xl border border-zinc-800 bg-zinc-950">
                 <div x-ref="canvas"
                      class="relative"
                      :style="`width:${canvasW}px; height:${canvasH}px;
@@ -263,12 +264,16 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('workflowCanvas', (graph, palette, saveUrl) => ({
                 // ---- config ----
-                canvasW: 2400,
-                canvasH: 1500,
                 nodeW: 184,
                 nodeH: 64,
+                margin: 200,
                 palette,
                 saveUrl,
+
+                // Visible viewport size — the canvas fills it by default and only
+                // grows beyond it when blocks are dragged past the edge.
+                containerW: 0,
+                containerH: 0,
 
                 // ---- state ----
                 nodes: (graph.nodes || []).map(n => ({
@@ -295,6 +300,22 @@
                 saving: false,
                 savedOnce: false,
                 _tmp: 0,
+
+                // ---- lifecycle / sizing ----
+                init() { this.$nextTick(() => this.measure()); },
+                measure() {
+                    const el = this.$refs.scroll;
+                    if (el) { this.containerW = el.clientWidth; this.containerH = el.clientHeight; }
+                },
+                // Canvas fits the viewport, growing to wrap any blocks placed beyond it.
+                get canvasW() {
+                    const maxRight = this.nodes.reduce((m, n) => Math.max(m, n.x + this.nodeW), 0);
+                    return Math.max(this.containerW || 800, maxRight + this.margin);
+                },
+                get canvasH() {
+                    const maxBottom = this.nodes.reduce((m, n) => Math.max(m, n.y + this.nodeH), 0);
+                    return Math.max(this.containerH || 600, maxBottom + this.margin);
+                },
 
                 // ---- type helpers ----
                 meta(type) { return this.palette.find(p => p.value === type) || {}; },
@@ -333,13 +354,13 @@
 
                 addNode(type) {
                     const id = 'tmp-' + (++this._tmp);
-                    const n = this.nodes.length;
-                    this.nodes.push({
-                        id, type, label: '',
-                        x: 80 + (n % 6) * 36,
-                        y: 80 + (n % 6) * 36,
-                        meta: { url: '', note: '' },
-                    });
+                    const sc = this.$refs.scroll;
+                    const offset = (this.nodes.length % 6) * 34;
+                    // Drop the block near the top-left of the *currently visible*
+                    // area so it's always in view, never off-screen.
+                    const x = (sc ? sc.scrollLeft : 0) + 48 + offset;
+                    const y = (sc ? sc.scrollTop : 0) + 48 + offset;
+                    this.nodes.push({ id, type, label: '', x, y, meta: { url: '', note: '' } });
                     this.selectedId = id;
                     this.selectedEdgeId = null;
                     this.markDirty();
