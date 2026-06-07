@@ -12,6 +12,7 @@ use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DockerController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +106,12 @@ Route::middleware(['auth', 'workspace'])->group(function () {
         Route::patch('/',            [CostController::class, 'update'])->name('update');
         Route::post('/',             [CostController::class, 'store'])->name('store');
         Route::delete('/{costItem}', [CostController::class, 'destroy'])->name('destroy');
+    });
+
+    // Projekt Workflows (Baukasten — pro Workspace)
+    Route::prefix('workflow')->name('workflow.')->group(function () {
+        Route::get('/',  [WorkflowController::class, 'index'])->name('index');
+        Route::put('/',  [WorkflowController::class, 'update'])->name('update');
     });
 
     // Alerts

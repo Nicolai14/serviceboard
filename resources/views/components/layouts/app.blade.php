@@ -179,6 +179,30 @@
                 <div class="border-t border-zinc-800/60"></div>
             </div>
 
+            {{-- Projekt --}}
+            <div class="px-3">
+                <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
+                   class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
+                    Projekt
+                </p>
+                @php $workflowActive = request()->routeIs('workflow.*'); @endphp
+                <a href="{{ route('workflow.index') }}"
+                   @click="mobileOpen = false"
+                   class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
+                          {{ $workflowActive ? 'bg-indigo-600/15 text-indigo-400 ring-1 ring-indigo-600/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
+                    <svg class="h-[18px] w-[18px] shrink-0 {{ $workflowActive ? 'text-indigo-400' : 'text-zinc-500 group-hover:text-zinc-300' }}"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h4.5v4.5h-4.5v-4.5zM15.75 12.75h4.5v4.5h-4.5v-4.5zM3.75 17.25h4.5v0a2.25 2.25 0 002.25-2.25v-3a2.25 2.25 0 012.25-2.25h2.25"/>
+                    </svg>
+                    <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">Workflows</span>
+                </a>
+            </div>
+
+            {{-- Divider --}}
+            <div class="px-3">
+                <div class="border-t border-zinc-800/60"></div>
+            </div>
+
             {{-- Finanzen --}}
             <div class="px-3">
                 <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
@@ -385,5 +409,7 @@
         </main>
     </div>
 </div>
+
+@stack('scripts')
 </body>
 </html>

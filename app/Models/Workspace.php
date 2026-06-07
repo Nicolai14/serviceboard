@@ -41,4 +41,16 @@ class Workspace extends Model
     {
         return $this->hasMany(CostItem::class);
     }
+
+    /** @return HasMany<WorkflowNode, $this> */
+    public function workflowNodes(): HasMany
+    {
+        return $this->hasMany(WorkflowNode::class);
+    }
+
+    /** @return HasMany<WorkflowEdge, $this> */
+    public function workflowEdges(): HasMany
+    {
+        return $this->hasMany(WorkflowEdge::class);
+    }
 }
