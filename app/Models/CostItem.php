@@ -51,13 +51,20 @@ class CostItem extends Model
      */
     public function displayName(): string
     {
+        $costable = $this->costable;
+
+        if ($costable instanceof Server || $costable instanceof CloudflareZone) {
+            return $costable->name;
+        }
+
         if ($this->isManual()) {
             return $this->label ?: 'Unbenannter Posten';
         }
 
+        // Linked item whose resource was deleted.
         return match ($this->costable_type) {
-            Server::class         => $this->costable?->name ?? 'Gelöschter Server',
-            CloudflareZone::class => $this->costable?->name ?? 'Gelöschte Domain',
+            Server::class         => 'Gelöschter Server',
+            CloudflareZone::class => 'Gelöschte Domain',
             default               => $this->label ?: '—',
         };
     }
