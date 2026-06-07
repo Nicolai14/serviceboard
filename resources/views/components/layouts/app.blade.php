@@ -179,6 +179,30 @@
                 <div class="border-t border-zinc-800/60"></div>
             </div>
 
+            {{-- Finanzen --}}
+            <div class="px-3">
+                <p x-show="sidebarOpen || mobileOpen" x-transition.opacity
+                   class="mb-1.5 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">
+                    Finanzen
+                </p>
+                @php $costsActive = request()->routeIs('costs.*'); @endphp
+                <a href="{{ route('costs.index') }}"
+                   @click="mobileOpen = false"
+                   class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-all
+                          {{ $costsActive ? 'bg-emerald-600/15 text-emerald-400 ring-1 ring-emerald-600/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100' }}">
+                    <svg class="h-[18px] w-[18px] shrink-0 {{ $costsActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300' }}"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span x-show="sidebarOpen || mobileOpen" x-transition.opacity class="truncate">Kosten</span>
+                </a>
+            </div>
+
+            {{-- Divider --}}
+            <div class="px-3">
+                <div class="border-t border-zinc-800/60"></div>
+            </div>
+
             {{-- Public Boards --}}
             @auth
                 @php

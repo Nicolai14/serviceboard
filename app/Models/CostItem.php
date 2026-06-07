@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
+class CostItem extends Model
+{
+    protected $fillable = [
+        'workspace_id',
+        'user_id',
+        'costable_type',
+        'costable_id',
+        'label',
+        'monthly_price',
+        'currency',
+        'notes',
+    ];
+
+    protected $casts = [
+        'monthly_price' => 'decimal:2',
+    ];
+
+    /** @return MorphTo<Model, $this> */
+    public function costable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /** @return BelongsTo<Workspace, $this> */
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function isManual(): bool
+    {
+        return $this->costable_type === null;
+    }
+
+    /**
+     * Human-readable name: derived from the linked resource, or the manual label.
+     */
+    public function displayName(): string
+    {
+        if ($this->isManual()) {
+            return $this->label ?: 'Unbenannter Posten';
+        }
+
+        return match ($this->costable_type) {
+            Server::class         => $this->costable?->name ?? 'Gelöschter Server',
+            CloudflareZone::class => $this->costable?->name ?? 'Gelöschte Domain',
+            default               => $this->label ?: '—',
+        };
+    }
+
+    /**
+     * Category key used for grouping in the UI.
+     */
+    public function category(): string
+    {
+        return match ($this->costable_type) {
+            Server::class         => 'server',
+            CloudflareZone::class => 'domain',
+            default               => 'manual',
+        };
+    }
+}

@@ -35,4 +35,10 @@ class Workspace extends Model
     {
         return $this->hasMany(Server::class);
     }
+
+    /** @return HasMany<CostItem, $this> */
+    public function costItems(): HasMany
+    {
+        return $this->hasMany(CostItem::class);
+    }
 }

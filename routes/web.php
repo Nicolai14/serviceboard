@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CloudflareController;
+use App\Http\Controllers\CostController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DockerController;
@@ -96,6 +97,14 @@ Route::middleware(['auth', 'workspace'])->group(function () {
         Route::get('/zones/{zone}',             [CloudflareController::class, 'zoneShow'])->name('zones.show');
         Route::get('/zones/{zone}/status-json', [CloudflareController::class, 'zoneStatusJson'])->name('zones.status-json');
         Route::post('/zones/{zone}/sync-dns',   [CloudflareController::class, 'syncDns'])->name('zones.sync-dns');
+    });
+
+    // Costs (Kostenübersicht — pro Workspace)
+    Route::prefix('costs')->name('costs.')->group(function () {
+        Route::get('/',              [CostController::class, 'index'])->name('index');
+        Route::patch('/',            [CostController::class, 'update'])->name('update');
+        Route::post('/',             [CostController::class, 'store'])->name('store');
+        Route::delete('/{costItem}', [CostController::class, 'destroy'])->name('destroy');
     });
 
     // Alerts
