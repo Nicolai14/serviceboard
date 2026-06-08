@@ -104,7 +104,39 @@ jobs:
       - run: composer analyse
 
   # -----------------------------------------------------------------------
-  # 5) Deploy (nur main-Branch nach Push)
+  # 5) Dependency Audit (bekannte Schwachstellen)
+  # -----------------------------------------------------------------------
+  # Läuft unabhängig und blockiert den Deploy nicht (nicht in `needs`), macht
+  # neue CVEs aber als roten Check sichtbar. Zum harten Blockieren einfach
+  # `dependency-audit` in das `needs` des deploy-Jobs aufnehmen.
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Composer audit
+        run: composer audit
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm install
+
+      - name: npm audit (high & critical)
+        run: npm audit --audit-level=high
+
+  # -----------------------------------------------------------------------
+  # 6) Deploy (nur main-Branch nach Push)
   # -----------------------------------------------------------------------
   deploy:
     name: Deploy to Hetzner
