@@ -19,7 +19,7 @@ class TelegramDailyReportTest extends TestCase
         parent::setUp();
 
         config([
-            'serverflow.telegram.bot_token' => 'test-bot-token',
+            'serviceboard.telegram.bot_token' => 'test-bot-token',
         ]);
 
         Http::fake([

@@ -41,7 +41,7 @@ class StatusCommand implements TelegramCommandContract
             ->count();
 
         $lines = [
-            '*ServerFlow Status*',
+            '*ServiceBoard Status*',
             '',
             "🖥  Server: *{$servers->count()}* total",
             "    🟢 online: {$online}",

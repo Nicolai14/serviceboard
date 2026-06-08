@@ -10,7 +10,7 @@ class TelegramService
 
     private function client(): \Illuminate\Http\Client\PendingRequest
     {
-        $token = config('serverflow.telegram.bot_token');
+        $token = config('serviceboard.telegram.bot_token');
 
         return Http::baseUrl(self::API_BASE . $token . '/')->acceptJson()->timeout(10);
     }
@@ -46,7 +46,7 @@ class TelegramService
     public function testConnection(string $chatId): array
     {
         try {
-            $sent = $this->sendMessage($chatId, 'ServerFlow: Test-Nachricht erfolgreich.');
+            $sent = $this->sendMessage($chatId, 'ServiceBoard: Test-Nachricht erfolgreich.');
 
             return [
                 'success' => $sent,

@@ -12,7 +12,7 @@ class TelegramSetWebhookCommand extends Command
 
     public function handle(TelegramService $telegram): int
     {
-        $secret = (string) config('serverflow.telegram.webhook_secret');
+        $secret = (string) config('serviceboard.telegram.webhook_secret');
 
         if ($secret === '') {
             $this->error('TELEGRAM_WEBHOOK_SECRET ist nicht gesetzt.');
@@ -20,7 +20,7 @@ class TelegramSetWebhookCommand extends Command
         }
 
         $url = $this->argument('url')
-            ?? config('serverflow.telegram.webhook_url')
+            ?? config('serviceboard.telegram.webhook_url')
             ?? route('telegram.webhook', ['secret' => $secret]);
 
         $this->line("Setze Webhook auf: <fg=cyan>{$url}</>");

@@ -22,7 +22,7 @@ class HelpCommand implements TelegramCommandContract
 
     public function execute(User $user, array $args = []): string
     {
-        $lines = ['*ServerFlow Bot — Befehle*', ''];
+        $lines = ['*ServiceBoard Bot — Befehle*', ''];
 
         foreach ($this->commands as $command) {
             $lines[] = sprintf('/%s — %s', $command->name(), $command->description());

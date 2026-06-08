@@ -20,7 +20,7 @@ class StartCommand implements TelegramCommandContract
     public function execute(User $user, array $args = []): string
     {
         return "Hallo *{$user->name}*! 👋\n\n"
-            . "Der ServerFlow-Bot ist mit deinem Account verknüpft. "
+            . "Der ServiceBoard-Bot ist mit deinem Account verknüpft. "
             . "Schreibe /help um alle Befehle zu sehen.";
     }
 }

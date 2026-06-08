@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: serverflow_app
+    container_name: serviceboard_app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -12,11 +12,11 @@ services:
     environment:
       - PHP_OPCACHE_VALIDATE_TIMESTAMPS=1
     networks:
-      - serverflow
+      - serviceboard
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: serverflow_nginx
+    container_name: serviceboard_nginx
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:80"
@@ -26,28 +26,28 @@ services:
     depends_on:
       - app
     networks:
-      - serverflow
+      - serviceboard
 
   mysql:
     image: mysql:8.4
-    container_name: serverflow_mysql
+    container_name: serviceboard_mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-serverflow}
+      MYSQL_DATABASE: ${DB_DATABASE:-serviceboard}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
-      MYSQL_USER: ${DB_USERNAME:-serverflow}
+      MYSQL_USER: ${DB_USERNAME:-serviceboard}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
-      - serverflow
+      - serviceboard
 
   queue:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: serverflow_queue
+    container_name: serviceboard_queue
     restart: unless-stopped
     working_dir: /var/www
     command: php artisan queue:work --queue=monitoring,default --sleep=3 --tries=3 --max-time=3600
@@ -58,19 +58,19 @@ services:
       - mysql
       - redis
     networks:
-      - serverflow
+      - serviceboard
 
   redis:
     image: redis:7-alpine
-    container_name: serverflow_redis
+    container_name: serviceboard_redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
     networks:
-      - serverflow
+      - serviceboard
 
 networks:
-  serverflow:
+  serviceboard:
     driver: bridge
 
 volumes:

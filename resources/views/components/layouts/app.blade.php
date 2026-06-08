@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? config('app.name') }} — ServerFlow</title>
+    <title>{{ $title ?? config('app.name') }} — ServiceBoard</title>
     <style>[x-cloak] { display: none !important; }</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -44,7 +44,7 @@
                 </svg>
             </div>
             <div x-show="sidebarOpen || mobileOpen" x-transition.opacity class="min-w-0 flex-1">
-                <p class="text-sm font-bold text-white leading-none">ServerFlow</p>
+                <p class="text-sm font-bold text-white leading-none">ServiceBoard</p>
                 <p class="text-xs text-zinc-500 mt-0.5">Infrastructure Dashboard</p>
             </div>
             {{-- Close button (mobile only) --}}

@@ -1,4 +1,4 @@
-# ServerFlow
+# ServiceBoard
 
 Server-Monitoring Dashboard auf Basis von Laravel 13, Tailwind CSS und Alpine.js.
 
@@ -53,11 +53,11 @@ push → test (paratest) → build-assets → lint → static-analysis (Larastan
 
 - Docker + Docker Compose
 - Node.js 22
-- `.env` unter `/root/serverflow/.env`
+- `.env` unter `/root/serviceboard/.env`
 - GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`
 
 ## SSH-Monitoring
 
-ServerFlow verbindet sich per SSH mit den verwalteten Servern und führt ein Shell-Script aus, das CPU, RAM, Disk, Load und Uptime in einem einzigen Durchlauf erfasst.
+ServiceBoard verbindet sich per SSH mit den verwalteten Servern und führt ein Shell-Script aus, das CPU, RAM, Disk, Load und Uptime in einem einzigen Durchlauf erfasst.
 
 Empfohlener Setup: dedizierter `monitor`-User ohne Root-Rechte, mit SSH-Key-Auth. Docker-Metriken erfordern Mitgliedschaft in der `docker`-Gruppe.

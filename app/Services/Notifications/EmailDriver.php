@@ -27,7 +27,7 @@ class EmailDriver implements NotificationDriverContract
     public function test(NotificationChannel $channel): array
     {
         try {
-            $sent = $this->send($channel, 'ServerFlow Test', 'Test notification from ServerFlow.');
+            $sent = $this->send($channel, 'ServiceBoard Test', 'Test notification from ServiceBoard.');
 
             return ['success' => $sent, 'message' => $sent ? 'Test email sent.' : 'Missing email address in config.'];
         } catch (\Throwable $e) {

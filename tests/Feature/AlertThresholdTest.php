@@ -119,7 +119,7 @@ class AlertThresholdTest extends TestCase
 
     public function test_threshold_breach_dispatches_telegram_notification(): void
     {
-        config(['serverflow.telegram.bot_token' => 'test-token']);
+        config(['serviceboard.telegram.bot_token' => 'test-token']);
         Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
 
         $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);
@@ -141,7 +141,7 @@ class AlertThresholdTest extends TestCase
 
     public function test_threshold_breach_does_not_resend_while_alert_open(): void
     {
-        config(['serverflow.telegram.bot_token' => 'test-token']);
+        config(['serviceboard.telegram.bot_token' => 'test-token']);
         Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
 
         $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);
@@ -164,7 +164,7 @@ class AlertThresholdTest extends TestCase
 
     public function test_threshold_breach_after_resolve_sends_again(): void
     {
-        config(['serverflow.telegram.bot_token' => 'test-token']);
+        config(['serviceboard.telegram.bot_token' => 'test-token']);
         Http::fake(['api.telegram.org/*' => Http::response(['ok' => true], 200)]);
 
         $server = $this->serverWithMetric(['alerts_enabled' => true], cpu: 85);

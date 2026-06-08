@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Auth' }} — ServerFlow</title>
+    <title>{{ $title ?? 'Auth' }} — ServiceBoard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full bg-zinc-950 text-zinc-100 font-sans antialiased flex items-center justify-center p-4">
@@ -18,7 +18,7 @@
                 </svg>
             </div>
             <div class="text-center">
-                <h1 class="text-xl font-bold text-white">ServerFlow</h1>
+                <h1 class="text-xl font-bold text-white">ServiceBoard</h1>
                 <p class="text-sm text-zinc-500">Server Monitoring Platform</p>
             </div>
         </div>

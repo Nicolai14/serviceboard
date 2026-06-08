@@ -19,8 +19,8 @@ class TelegramBotTest extends TestCase
         parent::setUp();
 
         config([
-            'serverflow.telegram.bot_token'      => 'test-bot-token',
-            'serverflow.telegram.webhook_secret' => 'test-secret',
+            'serviceboard.telegram.bot_token'      => 'test-bot-token',
+            'serviceboard.telegram.webhook_secret' => 'test-secret',
         ]);
 
         Http::fake([
@@ -108,7 +108,7 @@ class TelegramBotTest extends TestCase
         Http::assertSent(function ($request) {
             return str_contains($request->url(), 'sendMessage')
                 && str_contains($request['text'], '42')
-                && str_contains($request['text'], 'keinem ServerFlow-Account');
+                && str_contains($request['text'], 'keinem ServiceBoard-Account');
         });
     }
 

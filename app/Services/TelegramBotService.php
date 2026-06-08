@@ -50,7 +50,7 @@ class TelegramBotService
         if (! $user) {
             $this->telegram->sendMessage(
                 $chatId,
-                "Diese Chat-ID ist keinem ServerFlow-Account zugeordnet.\n\n"
+                "Diese Chat-ID ist keinem ServiceBoard-Account zugeordnet.\n\n"
                 . "Lege in der Web-UI einen Telegram-Notification-Channel mit folgender Chat-ID an:\n"
                 . "`{$chatId}`",
             );
