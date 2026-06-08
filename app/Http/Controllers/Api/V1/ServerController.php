@@ -15,6 +15,7 @@ class ServerController extends Controller
     {
         $servers = $request->user()
             ->servers()
+            ->with('latestMetric')
             ->withCount('dockerContainers')
             ->latest()
             ->get();
@@ -27,7 +28,7 @@ class ServerController extends Controller
         abort_unless($server->user_id === $request->user()->id, 403);
 
         $server->loadCount('dockerContainers', 'services');
-        $server->load(['metrics' => fn ($q) => $q->latest('recorded_at')->limit(1)]);
+        $server->load('latestMetric');
 
         return new ServerResource($server);
     }

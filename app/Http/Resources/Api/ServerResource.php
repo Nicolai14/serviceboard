@@ -24,10 +24,9 @@ class ServerResource extends JsonResource
             'last_polled_at' => $this->last_polled_at?->toISOString(),
             'containers_count' => $this->whenCounted('dockerContainers'),
             'services_count'   => $this->whenCounted('services'),
-            'latest_metric' => $this->whenLoaded('metrics', function () {
-                $metric = $this->metrics->first();
-                return $metric ? new MetricResource($metric) : null;
-            }),
+            'latest_metric' => $this->whenLoaded('latestMetric', fn () => $this->latestMetric
+                ? new MetricResource($this->latestMetric)
+                : null),
             'created_at'  => $this->created_at?->toISOString(),
         ];
     }

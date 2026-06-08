@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Server extends Model
@@ -109,6 +110,12 @@ class Server extends Model
     public function metrics(): HasMany
     {
         return $this->hasMany(Metric::class);
+    }
+
+    /** @return HasOne<Metric, $this> */
+    public function latestMetric(): HasOne
+    {
+        return $this->hasOne(Metric::class)->latestOfMany('recorded_at');
     }
 
     /** @return HasMany<Alert, $this> */
