@@ -78,6 +78,10 @@ ServiceBoard connects to the managed servers over SSH and runs a shell script th
 
 Recommended setup: a dedicated, non-root `monitor` user with SSH key authentication. Docker metrics require membership in the `docker` group. SSH credentials are stored encrypted (`encrypted` cast) and are never returned in API responses.
 
+## Roadmap
+
+- [ ] English (i18n) translation of the UI — the interface is currently German only
+
 ## License
 
 [MIT](LICENSE)
