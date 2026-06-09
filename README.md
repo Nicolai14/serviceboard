@@ -1,37 +1,37 @@
 # ServiceBoard
 
-> Self-hosted Server- & Infrastruktur-Monitoring-Dashboard auf Basis von Laravel 13, Tailwind CSS und Alpine.js.
+> Self-hosted server & infrastructure monitoring dashboard built with Laravel 13, Tailwind CSS, and Alpine.js.
 
-ServiceBoard überwacht deine Server per SSH (CPU, RAM, Disk, Load, Uptime), verwaltet Docker-Container, Dienste und Deployments, visualisiert die Projekt-Architektur als Baukasten und behält die Kosten im Blick — alles in einem aufgeräumten Dashboard mit Privat-/Geschäftlich-Workspaces.
+ServiceBoard monitors your servers over SSH (CPU, RAM, disk, load, uptime), manages Docker containers, services and deployments, maps your project architecture as a visual building-block canvas, and keeps an eye on costs — all in one clean dashboard with separate Personal and Business workspaces.
 
 ## Screenshots
 
-> Die Bilder liegen unter [`docs/screenshots/`](docs/screenshots/) — siehe die Anleitung dort zum Hinzufügen/Aktualisieren.
+> _The screenshots below use demo data (RFC 5737 example IPs)._
 
-| Dashboard | Server-Detail |
+| Dashboard | Server detail |
 |---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Server-Detail](docs/screenshots/server-detail.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Server detail](docs/screenshots/server-detail.png) |
 
-| Projekt-Workflows | Kostenübersicht |
+| Project Workflows | Cost overview |
 |---|---|
-| ![Projekt-Workflows](docs/screenshots/workflows.png) | ![Kostenübersicht](docs/screenshots/costs.png) |
+| ![Project Workflows](docs/screenshots/workflows.png) | ![Cost overview](docs/screenshots/costs.png) |
 
 ## Features
 
-- **Server-Übersicht** — Status, CPU, RAM, Disk, Uptime per SSH-Polling, inkl. 24h-Verlaufsdiagramm
-- **SSH-Verbindungstest** — TCP-Reachability und Auth-Test direkt aus dem Dashboard
-- **Docker-Monitoring** — Container-Status pro Server und globale Übersicht
-- **Services** — Verwaltung von Diensten pro Server inkl. HTTP/TCP-Health-Checks mit Status-Tracking und Alerts
-- **Deployments** — Git-Pull, Shell-Script oder Docker-Compose per SSH ausführen, mit Live-Log
-- **Projekt-Workflows** — visueller Baukasten: App, Server, Docker-Container, Software, Domain, Dienst und Datenbank als Bausteine platzieren, benennen und verbinden, um den Projektaufbau abzubilden (pro Workspace)
-- **Kosten** — automatische Kostenübersicht über alle Server und Domains plus eigene Posten, monatlich/jährlich
-- **Cloudflare-Integration** — DNS-Einträge und Zonen-Status
-- **Alerts** — Benachrichtigungen (u.a. Telegram) bei Ausfällen oder Schwellenwertüberschreitungen, mit pro Server konfigurierbaren CPU/RAM/Disk-Schwellwerten
-- **Workspaces** — Trennung zwischen Privat (🏠) und Geschäftlich (💼)
+- **Server overview** — status, CPU, RAM, disk and uptime via SSH polling, including a 24-hour history chart
+- **SSH connection test** — check reachability and authentication directly from the dashboard
+- **Docker monitoring** — container status per server and a global overview
+- **Services** — manage services per server, including HTTP/TCP health checks with status history and alerts
+- **Deployments** — run git pull, a shell script or Docker Compose over SSH, with a live log
+- **Project Workflows** — a visual building-block canvas: place, name and connect App, Server, Docker container, Software, Domain, Service and Database blocks to map how a project is wired together (per workspace)
+- **Costs** — automatic cost overview across all servers and domains plus custom line items, monthly and yearly
+- **Cloudflare integration** — DNS records and zone status
+- **Alerts** — notifications (incl. Telegram) on outages or threshold breaches, with per-server CPU/RAM/disk thresholds
+- **Workspaces** — separation between Personal (🏠) and Business (💼)
 
-## Stack
+## Tech Stack
 
-| Komponente | Version |
+| Component | Version |
 |---|---|
 | PHP | 8.4 |
 | Laravel | 13.x |
@@ -41,7 +41,7 @@ ServiceBoard überwacht deine Server per SSH (CPU, RAM, Disk, Load, Uptime), ver
 | Tailwind CSS | 4.x |
 | Alpine.js | 3.x |
 
-## Lokale Entwicklung
+## Local Development
 
 ```bash
 cp .env.example .env
@@ -57,27 +57,27 @@ php artisan serve
 
 ## Deployment
 
-Pushes auf `main` deployen automatisch via GitHub Actions auf den Produktionsserver (per SSH).
+Pushes to `main` are automatically rolled out to the production server via GitHub Actions (over SSH).
 
-Die Pipeline läuft Tests, prüft Abhängigkeiten auf bekannte Schwachstellen, baut Assets und deployt:
+The pipeline runs the tests, audits dependencies for known vulnerabilities, builds the assets and deploys:
 
 ```
 push → test (paratest) → build-assets → lint → static-analysis (Larastan) → dependency-audit → deploy
 ```
 
-### Voraussetzungen (Server)
+### Server requirements
 
-- Docker + Docker Compose
+- Docker and Docker Compose
 - Node.js 22
-- `.env` unter `/root/serviceboard/.env` (`APP_ENV=production`, `APP_DEBUG=false`)
-- GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`
+- `.env` at `/root/serviceboard/.env` (`APP_ENV=production`, `APP_DEBUG=false`)
+- GitHub secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`
 
-## SSH-Monitoring
+## SSH Monitoring
 
-ServiceBoard verbindet sich per SSH mit den verwalteten Servern und führt ein Shell-Script aus, das CPU, RAM, Disk, Load und Uptime in einem einzigen Durchlauf erfasst.
+ServiceBoard connects to the managed servers over SSH and runs a shell script that captures CPU, RAM, disk, load and uptime in a single pass.
 
-Empfohlener Setup: dedizierter `monitor`-User ohne Root-Rechte, mit SSH-Key-Auth. Docker-Metriken erfordern Mitgliedschaft in der `docker`-Gruppe. SSH-Zugangsdaten werden verschlüsselt gespeichert (`encrypted` cast) und nie in API-Antworten ausgegeben.
+Recommended setup: a dedicated, non-root `monitor` user with SSH key authentication. Docker metrics require membership in the `docker` group. SSH credentials are stored encrypted (`encrypted` cast) and are never returned in API responses.
 
-## Lizenz
+## License
 
 [MIT](LICENSE)
