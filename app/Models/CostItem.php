@@ -17,10 +17,13 @@ class CostItem extends Model
         'monthly_price',
         'currency',
         'notes',
+        'is_recurring',
+        'receipt_path',
     ];
 
     protected $casts = [
         'monthly_price' => 'decimal:2',
+        'is_recurring'  => 'boolean',
     ];
 
     /** @return MorphTo<Model, $this> */

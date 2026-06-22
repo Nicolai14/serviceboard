@@ -6,7 +6,9 @@ use App\Models\CostItem;
 use App\Services\CostService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CostController extends Controller
 {
@@ -69,7 +71,15 @@ class CostController extends Controller
             'label'         => ['required', 'string', 'max:120'],
             'monthly_price' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
             'notes'         => ['nullable', 'string', 'max:500'],
+            'is_recurring'  => ['boolean'],
+            'receipt'       => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
         ]);
+
+        $receiptPath = null;
+        if ($request->hasFile('receipt')) {
+            $receiptPath = $request->file('receipt')
+                ->store("receipts/{$workspace->id}", 'local');
+        }
 
         CostItem::create([
             'workspace_id'  => $workspace->id,
@@ -77,9 +87,29 @@ class CostController extends Controller
             'label'         => $validated['label'],
             'monthly_price' => $validated['monthly_price'] ?? null,
             'notes'         => $validated['notes'] ?? null,
+            'is_recurring'  => $validated['is_recurring'] ?? true,
+            'receipt_path'  => $receiptPath,
         ]);
 
         return redirect()->route('costs.index')->with('success', 'Posten wurde hinzugefügt.');
+    }
+
+    /**
+     * GET /costs/{costItem}/receipt
+     * Stream the stored receipt file to the authenticated workspace member.
+     */
+    public function receipt(Request $request, CostItem $costItem): StreamedResponse
+    {
+        $workspace = app('activeWorkspace');
+
+        abort_unless($costItem->workspace_id === $workspace->id, 403);
+        abort_unless(
+            $costItem->receipt_path && Storage::disk('local')->exists($costItem->receipt_path),
+            404,
+            'Rechnung nicht gefunden.'
+        );
+
+        return Storage::disk('local')->download($costItem->receipt_path);
     }
 
     /**
@@ -92,6 +122,10 @@ class CostController extends Controller
 
         abort_unless($costItem->workspace_id === $workspace->id, 403);
         abort_unless($costItem->isManual(), 403, 'Server- und Domain-Posten können nicht gelöscht werden.');
+
+        if ($costItem->receipt_path) {
+            Storage::disk('local')->delete($costItem->receipt_path);
+        }
 
         $costItem->delete();
 

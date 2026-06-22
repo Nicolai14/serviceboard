@@ -68,6 +68,7 @@ class CostService
      *     groups: array<string, \Illuminate\Support\Collection<int, CostItem>>,
      *     totals: array<string, float>,
      *     grand_total: float,
+     *     onetime_total: float,
      *     priced_count: int,
      *     unpriced_count: int
      * }
@@ -90,16 +91,20 @@ class CostService
             $groups[$item->category()]->push($item);
         }
 
+        // One-time manual items are excluded from the monthly recurring total.
         $totals = [
             'server' => (float) $groups['server']->sum('monthly_price'),
             'domain' => (float) $groups['domain']->sum('monthly_price'),
-            'manual' => (float) $groups['manual']->sum('monthly_price'),
+            'manual' => (float) $groups['manual']->where('is_recurring', true)->sum('monthly_price'),
         ];
+
+        $onetime_total = (float) $groups['manual']->where('is_recurring', false)->sum('monthly_price');
 
         return [
             'groups'         => $groups,
             'totals'         => $totals,
             'grand_total'    => array_sum($totals),
+            'onetime_total'  => $onetime_total,
             'priced_count'   => $items->whereNotNull('monthly_price')->count(),
             'unpriced_count' => $items->whereNull('monthly_price')->count(),
         ];
