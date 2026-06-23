@@ -129,7 +129,7 @@ class CostController extends Controller
         $name = $costItem->displayName();
         $costable->delete();
 
-        return redirect()->route('costs.index')->with('success', "„{$name}" wurde entfernt.");
+        return redirect()->route('costs.index')->with('success', "\"{$name}\" wurde entfernt.");
     }
 
     /**
