@@ -113,6 +113,26 @@ class CostController extends Controller
     }
 
     /**
+     * DELETE /costs/{costItem}/resource
+     * Delete the underlying server or domain (and its cost row) from the system.
+     */
+    public function destroyResource(Request $request, CostItem $costItem): RedirectResponse
+    {
+        $workspace = app('activeWorkspace');
+
+        abort_unless($costItem->workspace_id === $workspace->id, 403);
+        abort_unless(! $costItem->isManual(), 403);
+
+        $costable = $costItem->costable;
+        abort_unless($costable !== null, 404);
+
+        $name = $costItem->displayName();
+        $costable->delete();
+
+        return redirect()->route('costs.index')->with('success', "„{$name}" wurde entfernt.");
+    }
+
+    /**
      * DELETE /costs/{costItem}
      * Remove a manual item. Auto-listed server/domain items cannot be deleted.
      */

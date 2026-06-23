@@ -102,11 +102,12 @@ Route::middleware(['auth', 'workspace'])->group(function () {
 
     // Costs (Kostenübersicht — pro Workspace)
     Route::prefix('costs')->name('costs.')->group(function () {
-        Route::get('/',                      [CostController::class, 'index'])->name('index');
-        Route::patch('/',                    [CostController::class, 'update'])->name('update');
-        Route::post('/',                     [CostController::class, 'store'])->name('store');
-        Route::get('/{costItem}/receipt',    [CostController::class, 'receipt'])->name('receipt');
-        Route::delete('/{costItem}',         [CostController::class, 'destroy'])->name('destroy');
+        Route::get('/',                           [CostController::class, 'index'])->name('index');
+        Route::patch('/',                         [CostController::class, 'update'])->name('update');
+        Route::post('/',                          [CostController::class, 'store'])->name('store');
+        Route::get('/{costItem}/receipt',         [CostController::class, 'receipt'])->name('receipt');
+        Route::delete('/{costItem}/resource',     [CostController::class, 'destroyResource'])->name('resource.destroy');
+        Route::delete('/{costItem}',              [CostController::class, 'destroy'])->name('destroy');
     });
 
     // Projekt Workflows (Baukasten — pro Workspace)
