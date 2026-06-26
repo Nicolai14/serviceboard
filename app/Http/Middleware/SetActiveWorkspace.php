@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\CloudflareZone;
 use App\Models\Server;
 use Closure;
 use Illuminate\Http\Request;
@@ -29,11 +30,22 @@ class SetActiveWorkspace
             session(['active_workspace_id' => $workspace->id]);
         }
 
-        // Migrate any servers without a workspace into the personal workspace
-        if ($user->servers()->whereNull('workspace_id')->exists()) {
+        // Migrate any servers/domains without a workspace into the personal workspace
+        $hasOrphanServers = $user->servers()->whereNull('workspace_id')->exists();
+        $hasOrphanZones   = CloudflareZone::where('user_id', $user->id)->whereNull('workspace_id')->exists();
+
+        if ($hasOrphanServers || $hasOrphanZones) {
             $personal = $user->workspaces()->where('type', 'personal')->first();
-            $user->servers()->whereNull('workspace_id')
-                 ->update(['workspace_id' => $personal->id]);
+
+            if ($hasOrphanServers) {
+                $user->servers()->whereNull('workspace_id')
+                     ->update(['workspace_id' => $personal->id]);
+            }
+
+            if ($hasOrphanZones) {
+                CloudflareZone::where('user_id', $user->id)->whereNull('workspace_id')
+                    ->update(['workspace_id' => $personal->id]);
+            }
         }
 
         view()->share('activeWorkspace', $workspace);

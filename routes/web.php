@@ -98,6 +98,7 @@ Route::middleware(['auth', 'workspace'])->group(function () {
         Route::get('/zones/{zone}',             [CloudflareController::class, 'zoneShow'])->name('zones.show');
         Route::get('/zones/{zone}/status-json', [CloudflareController::class, 'zoneStatusJson'])->name('zones.status-json');
         Route::post('/zones/{zone}/sync-dns',   [CloudflareController::class, 'syncDns'])->name('zones.sync-dns');
+        Route::post('/zones/{zone}/workspace',  [CloudflareController::class, 'moveZone'])->name('zones.move');
     });
 
     // Costs (Kostenübersicht — pro Workspace)

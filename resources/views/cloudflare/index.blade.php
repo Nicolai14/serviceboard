@@ -229,14 +229,30 @@
                             <td class="px-4 py-3.5 hidden xl:table-cell">
                                 <span class="text-xs text-zinc-600">{{ $zone->synced_at?->diffForHumans() ?? '—' }}</span>
                             </td>
-                            <td class="px-4 py-3.5 text-right">
-                                <a href="{{ route('cloudflare.zones.show', $zone) }}"
-                                   class="inline-flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors whitespace-nowrap">
-                                    DNS
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-                                    </svg>
-                                </a>
+                            <td class="px-4 py-3.5">
+                                <div class="flex items-center justify-end gap-3">
+                                    @php $others = $workspaces->where('id', '!=', $zone->workspace_id); @endphp
+                                    @if ($others->isNotEmpty())
+                                        <form method="POST" action="{{ route('cloudflare.zones.move', $zone) }}">
+                                            @csrf
+                                            <select name="workspace_id" onchange="this.form.submit()"
+                                                    title="In anderen Workspace verschieben"
+                                                    class="rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-zinc-300 hover:border-zinc-600 focus:border-orange-500 focus:outline-none">
+                                                <option value="" selected disabled>Verschieben…</option>
+                                                @foreach ($others as $ws)
+                                                    <option value="{{ $ws->id }}">{{ $ws->type->icon() }} {{ $ws->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </form>
+                                    @endif
+                                    <a href="{{ route('cloudflare.zones.show', $zone) }}"
+                                       class="inline-flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors whitespace-nowrap">
+                                        DNS
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                                        </svg>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

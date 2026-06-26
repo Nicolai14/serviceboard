@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\WorkspaceType;
 use App\Models\CloudflareToken;
 use App\Models\CloudflareZone;
 use App\Models\DnsRecord;
+use App\Models\Workspace;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -74,6 +76,12 @@ class CloudflareService
         $synced   = 0;
         $seenIds  = [];
 
+        // New zones default to the owner's personal workspace; existing zones
+        // keep whatever workspace they were moved to.
+        $personalWorkspaceId = Workspace::where('user_id', $cfToken->user_id)
+            ->where('type', WorkspaceType::Personal)
+            ->value('id');
+
         do {
             $res  = $this->client($rawToken)->get('/zones', ['per_page' => 50, 'page' => $page]);
             $body = $res->json();
@@ -84,7 +92,7 @@ class CloudflareService
             }
 
             foreach ($body['result'] as $zone) {
-                CloudflareZone::updateOrCreate(
+                $model = CloudflareZone::updateOrCreate(
                     ['zone_id' => $zone['id']],
                     [
                         'cloudflare_token_id'    => $cfToken->id,
@@ -99,6 +107,12 @@ class CloudflareService
                         'synced_at'              => now(),
                     ]
                 );
+
+                // Assign a workspace only when the zone is first discovered.
+                if ($model->wasRecentlyCreated && $model->workspace_id === null && $personalWorkspaceId !== null) {
+                    $model->update(['workspace_id' => $personalWorkspaceId]);
+                }
+
                 $seenIds[] = $zone['id'];
                 $synced++;
             }

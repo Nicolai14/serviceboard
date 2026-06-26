@@ -12,14 +12,14 @@ use Illuminate\Support\Collection;
 class CostService
 {
     /**
-     * Ensure every server (of the workspace) and every Cloudflare domain
-     * (of the user) has a cost row in this workspace, and prune rows whose
-     * linked resource no longer exists. Manual items are left untouched.
+     * Ensure every server and every Cloudflare domain belonging to this
+     * workspace has a cost row in it, and prune rows whose linked resource
+     * no longer belongs here. Manual items are left untouched.
      */
     public function sync(User $user, Workspace $workspace): void
     {
         $serverIds = $workspace->servers()->pluck('id');
-        $zoneIds   = CloudflareZone::where('user_id', $user->id)->pluck('id');
+        $zoneIds   = CloudflareZone::where('workspace_id', $workspace->id)->pluck('id');
 
         $this->ensureItems($user, $workspace, Server::class, $serverIds);
         $this->ensureItems($user, $workspace, CloudflareZone::class, $zoneIds);

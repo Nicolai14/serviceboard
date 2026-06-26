@@ -14,6 +14,7 @@ class CloudflareZone extends Model
     protected $fillable = [
         'cloudflare_token_id',
         'user_id',
+        'workspace_id',
         'zone_id',
         'name',
         'status',
@@ -44,6 +45,12 @@ class CloudflareZone extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Workspace, $this> */
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
+
     /** @return HasMany<DnsRecord, $this> */
     public function dnsRecords(): HasMany
     {
@@ -63,5 +70,10 @@ class CloudflareZone extends Model
     public function scopeForUser($query, int $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function scopeForWorkspace($query, int $workspaceId)
+    {
+        return $query->where('workspace_id', $workspaceId);
     }
 }

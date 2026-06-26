@@ -27,8 +27,8 @@ class CloudflareController extends Controller
      */
     public function dnsIndex(Request $request): View
     {
-        $user    = $request->user();
-        $zoneIds = CloudflareZone::where('user_id', $user->id)->pluck('id');
+        $workspace = app('activeWorkspace');
+        $zoneIds   = CloudflareZone::where('workspace_id', $workspace->id)->pluck('id');
 
         $query = DnsRecord::whereIn('cloudflare_zone_id', $zoneIds)->with('zone:id,name');
 
@@ -53,7 +53,7 @@ class CloudflareController extends Controller
             ->paginate(50)
             ->withQueryString();
 
-        $zones = CloudflareZone::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']);
+        $zones = CloudflareZone::where('workspace_id', $workspace->id)->orderBy('name')->get(['id', 'name']);
         $types = DnsRecord::whereIn('cloudflare_zone_id', $zoneIds)
             ->distinct()->orderBy('type')->pluck('type');
 
@@ -64,14 +64,15 @@ class CloudflareController extends Controller
 
     public function index(Request $request): View
     {
-        $user = $request->user();
+        $user      = $request->user();
+        $workspace = app('activeWorkspace');
 
         $tokens = CloudflareToken::where('user_id', $user->id)
             ->withCount('zones')
             ->orderBy('created_at')
             ->get();
 
-        $zones = CloudflareZone::where('user_id', $user->id)
+        $zones = CloudflareZone::where('workspace_id', $workspace->id)
             ->withCount('dnsRecords')
             ->orderBy('name')
             ->get();
@@ -83,7 +84,9 @@ class CloudflareController extends Controller
             'dns_total'  => $zones->sum('dns_records_count'),
         ];
 
-        return view('cloudflare.index', compact('tokens', 'zones', 'stats'));
+        $workspaces = $user->workspaces()->orderBy('type')->get();
+
+        return view('cloudflare.index', compact('tokens', 'zones', 'stats', 'workspaces'));
     }
 
     // -------------------------------------------------------------------------
@@ -200,5 +203,26 @@ class CloudflareController extends Controller
             'dispatched' => true,
             'message'    => 'DNS-Sync läuft im Hintergrund…',
         ]);
+    }
+
+    /**
+     * POST /cloudflare/zones/{zone}/workspace
+     * Move a domain into another of the user's workspaces.
+     */
+    public function moveZone(Request $request, CloudflareZone $zone): RedirectResponse
+    {
+        abort_unless($zone->user_id === $request->user()->id, 403);
+
+        $data = $request->validate([
+            'workspace_id' => 'required|integer',
+        ]);
+
+        // Only allow moving into a workspace the user owns.
+        $target = $request->user()->workspaces()->find($data['workspace_id']);
+        abort_unless($target !== null, 403);
+
+        $zone->update(['workspace_id' => $target->id]);
+
+        return back()->with('success', sprintf('Domain "%s" nach %s verschoben.', $zone->name, $target->name));
     }
 }
